@@ -1,0 +1,6 @@
+@PAC.Web.API_HostAddress = http://localhost:5159
+
+GET {{PAC.Web.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

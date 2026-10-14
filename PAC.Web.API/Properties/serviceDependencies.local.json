@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "identityapp1": {
+      "connectionInfo": "App registration: PAKTRAK 2.0, Tenant: Pacific Air Cargo (pacificaircargo.com - Microsoft Entra ID)",
+      "type": "identityapp.default"
+    }
+  }
+}

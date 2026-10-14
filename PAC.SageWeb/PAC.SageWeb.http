@@ -1,0 +1,6 @@
+@PAC.SageWeb_HostAddress = http://localhost:5256
+
+GET {{PAC.SageWeb_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
