@@ -1,47 +1,84 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using PAC.Common.Sage;
+using PAC.Common.Tracking;
 using PAC.DataLayer.Sage;
-using System.Net;
-using System.Net.Http;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace PAC.SageWeb.Controllers
 {
-    [Route("api/[controller]")]
+    /// <summary>
+    /// Tracking reads for the PAC Track portal, on the routes and in the
+    /// shapes the portal client already uses (the same shapes the August
+    /// PACTRAK service produced). Dates are ISO (yyyy-MM-dd).
+    /// </summary>
     [ApiController]
-    public class TrackingController : ControllerBase
+    public class TrackingController(ILogger<TrackingController> logger) : ControllerBase
     {
-        // GET: api/<TrackingController>
-        [HttpGet]
-        public ActionResult<string> Get()
+        /// <summary>Orders dated in the range; custno narrows to one customer.</summary>
+        [HttpGet("api/awbs")]
+        public ActionResult<List<AwbHeader>> AwbsByDateRange([FromQuery] DateTime from, [FromQuery] DateTime to, [FromQuery] string? custno = null)
         {
-            return "value";
+            if (to < from) return BadRequest("to is before from");
+            if (custno is not null && !Input.IsKey(custno)) return BadRequest("custno");
+            return Try(() => TrackingDL.GetHeadersByDateRange(from, to, custno));
         }
 
-        // GET api/<TrackingController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
+        /// <summary>A customer's open orders.</summary>
+        [HttpGet("api/customers/{custno}/awbs/open")]
+        public ActionResult<List<AwbHeader>> OpenAwbs(string custno)
         {
-            return "value";
+            if (!Input.IsKey(custno)) return BadRequest("custno");
+            return Try(() => TrackingDL.GetOpenHeaders(custno));
         }
 
-        // POST api/<TrackingController>
-        [HttpPost]
-        public void Post([FromBody] string value)
+        [HttpGet("api/awbs/{sono}/manifest")]
+        public ActionResult<List<ManifestItem>> Manifest(string sono)
         {
+            if (!Input.IsKey(sono)) return BadRequest("sono");
+            return Try(() => TrackingDL.GetManifestItems(sono));
         }
 
-        // PUT api/<TrackingController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        [HttpGet("api/awbs/{sono}/pod")]
+        public ActionResult<List<PODHistoryItem>> PodForAwb(string sono)
         {
+            if (!Input.IsKey(sono)) return BadRequest("sono");
+            return Try(() => TrackingDL.GetPodsForAwb(sono));
         }
 
-        // DELETE api/<TrackingController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
+        [HttpGet("api/pod")]
+        public ActionResult<List<PODHistoryItem>> PodByDateRange([FromQuery] DateTime from, [FromQuery] DateTime to)
         {
+            if (to < from) return BadRequest("to is before from");
+            return Try(() => TrackingDL.GetPodsByDateRange(from, to));
         }
+
+        [HttpGet("api/invoices")]
+        public ActionResult<List<InvoiceDetail>> InvoicesByDateRange([FromQuery] DateTime from, [FromQuery] DateTime to)
+        {
+            if (to < from) return BadRequest("to is before from");
+            return Try(() => TrackingDL.GetInvoicesByDateRange(from, to));
+        }
+
+        private ActionResult<T> Try<T>(Func<T> read)
+        {
+            try
+            {
+                return Ok(read());
+            }
+            catch (Exception ex)
+            {
+                // the detail goes to the log; the caller gets a plain answer
+                logger.LogError(ex, "Tracking read failed for {Path}", Request.Path);
+                return Problem(statusCode: StatusCodes.Status500InternalServerError, title: "The operations database did not answer.");
+            }
+        }
+    }
+
+    /// <summary>Route and query values that reach the data layer: customer
+    /// numbers, sales order numbers and invoice numbers are letters,
+    /// digits and dashes only.</summary>
+    public static class Input
+    {
+        public static bool IsKey(string value)
+            => !string.IsNullOrWhiteSpace(value) && value.Length <= 32 && value.All(c => char.IsLetterOrDigit(c) || c == '-');
     }
 }
