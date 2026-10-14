@@ -23,6 +23,7 @@ namespace PAC.SageWeb.Controllers
         [HttpGet("{custNum}")]
         public ActionResult<Customer> Get(string custNum)
         {
+            if (!Input.IsKey(custNum)) return BadRequest("customer number");
             try
             {
                 Customer item = CustomerDL.GetCustomer(custNum);
@@ -31,7 +32,7 @@ namespace PAC.SageWeb.Controllers
 
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, ex);
+                return Problem(statusCode: StatusCodes.Status500InternalServerError, title: "The operations database did not answer.");
             }
         }
 
@@ -54,7 +55,7 @@ namespace PAC.SageWeb.Controllers
 
             catch(Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, ex);
+                return Problem(statusCode: StatusCodes.Status500InternalServerError, title: "The operations database did not answer.");
             }
         }
 

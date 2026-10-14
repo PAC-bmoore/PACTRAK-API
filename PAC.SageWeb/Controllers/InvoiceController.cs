@@ -28,6 +28,7 @@ namespace PAC.SageWeb.Controllers
         [HttpGet("{custNo}/{minDate}/{maxDate}")]
         public ActionResult<Invoice> GetInvoiceByCustInvNo(string custNo, DateTime minDate, DateTime maxDate)
         {
+            if (!Input.IsKey(custNo)) return BadRequest("customer number");
             try
             {
                 List<Invoice> list = InvoiceDL.GetInvoicesByCustDateRange(custNo, minDate, maxDate);
@@ -37,13 +38,14 @@ namespace PAC.SageWeb.Controllers
 
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, ex);
+                return Problem(statusCode: StatusCodes.Status500InternalServerError, title: "The operations database did not answer.");
             }
         }
 
         [HttpGet("Detail/{custNo}/{invNo}/{sono}")]
         public ActionResult<Invoice> GetInvoiceByCustInvNo(string custNo, string invNo, string sono)
         {
+            if (!Input.IsKey(custNo)) return BadRequest("customer number");
             try
             {
                 Invoice item = InvoiceDL.GetInvoiceBySONO(sono, invNo);
@@ -56,7 +58,7 @@ namespace PAC.SageWeb.Controllers
 
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, ex);
+                return Problem(statusCode: StatusCodes.Status500InternalServerError, title: "The operations database did not answer.");
             }
         }
 

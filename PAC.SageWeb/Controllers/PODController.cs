@@ -27,6 +27,7 @@ namespace PAC.SageWeb.Controllers
         [HttpGet("{custNo}/{minDate}/{maxDate}")]
         public ActionResult<PODHistoryItem> GetPODsByCustInvNo(string custNo, DateTime minDate, DateTime maxDate)
         {
+            if (!Input.IsKey(custNo)) return BadRequest("customer number");
             try
             {
                 List<PODHistoryItem> list = PODDL.GetPODHistory(custNo, minDate, maxDate);
@@ -35,7 +36,7 @@ namespace PAC.SageWeb.Controllers
 
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, ex);
+                return Problem(statusCode: StatusCodes.Status500InternalServerError, title: "The operations database did not answer.");
             }
         }
 
