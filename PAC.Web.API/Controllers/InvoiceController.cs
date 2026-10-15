@@ -1,4 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using PAC.Common.Sage;
+using PAC.DataLayer.API;
+using PAC.DataLayer.Sage;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -6,6 +10,7 @@ namespace PAC.Web.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class InvoiceController : ControllerBase
     {
         // GET: api/<InvoiceController>
@@ -17,10 +22,54 @@ namespace PAC.Web.API.Controllers
 
         // GET api/<InvoiceController>/5
         [HttpGet("{id}")]
-        public string Get(int id)
+        public ActionResult<Invoice> Get(int id)
         {
-            return "value";
+            try
+            {
+                Invoice item = InvoiceAPI.GetTrackingInvoiceBySono(id.ToString());
+
+                return Ok(item);
+            }
+
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex);
+            }
         }
+
+        [HttpGet("Detail/{id}/{custNo}")]
+        public ActionResult<List<InvoiceItem>> GetInvoiceLineItems(int id, string custNo)
+        {
+            try
+            {
+                List<InvoiceItem> list = InvoiceAPI.GetInvoiceLineItems(id.ToString(), custNo);
+
+                return Ok(list);
+            }
+
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex);
+            }
+        }
+
+
+        [HttpGet("{custNo}/{minDate}/{maxDate}")]
+        public ActionResult<List<Invoice>> GetInvoiceByCustInvNo(string custNo, DateTime minDate, DateTime maxDate)
+        {
+            try
+            {
+                List<Invoice> list = InvoiceAPI.GetInvoicesByCustDateRange(custNo, minDate, maxDate);
+
+                return Ok(list);
+            }
+
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex);
+            }
+        }
+
 
         // POST api/<InvoiceController>
         [HttpPost]

@@ -17,9 +17,7 @@ namespace PAC.DataLayer
             .Build();
 
         public static string SageConn => _config.GetConnectionString("PACTRAK-Sage"); 
-        public static string SqlConn => _config.GetConnectionString("PACTRAK-SQL"); 
-        //        public static string SageConn = "Provider=VFPOLEDB.1;Data Source=Q:\\SBTPro\\PRODATA.DBC;Exclusive=No;Collate=Machine;NULL=NO;DELETED=NO;BACKGROUNDFETCH=NO;";
-        //        public static string SageConn = "Provider=VFPOLEDB.1;Data Source=F:\\sage\\SBTPro\\PRODATA.DBC;Exclusive=No;Collate=Machine;NULL=NO;DELETED=NO;BACKGROUNDFETCH=NO;";
-        //        public static string SqlConn = "Server=10.0.0.4;Database=Flight;User ID=FlightUser;Password=?Pass@word1;TrustServerCertificate=True;";
+        public static string SqlConn => _config.GetConnectionString("PACTRAK-SQL");
+        public static string BaseAPIUrl => _config["WebSettings:ApiBaseUrl"];
     }
 }

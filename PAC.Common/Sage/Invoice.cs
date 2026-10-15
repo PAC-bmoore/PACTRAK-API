@@ -20,5 +20,6 @@ namespace PAC.Common.Sage
         public DateTime PaidDate { get; set; }
         public List<InvoiceItem> Items { get; set; }
         public string InvoiceStatus { get; set; } = string.Empty;
+        public string CustNo { get; set; } = string.Empty;
     }
 }
