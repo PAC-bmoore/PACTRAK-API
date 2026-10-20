@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using PAC.Common.Sage;
+using Input = PAC.Common.Tracking.Input;
 using PAC.DataLayer.Sage;
 using System.Net;
 

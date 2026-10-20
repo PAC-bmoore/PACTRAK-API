@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PAC.Common.Sage;
+using Input = PAC.Common.Tracking.Input;
 using PAC.DataLayer.Sage;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -10,13 +11,6 @@ namespace PAC.SageWeb.Controllers
     [ApiController]
     public class PODController : ControllerBase
     {
-        // GET: api/<PODController>
-        [HttpGet]
-        public ActionResult Get()
-        {
-            return BadRequest();
-        }
-
         // GET api/<PODController>/5
         [HttpGet("{awb}")]
         public ActionResult<PODItem> Get(string awb)

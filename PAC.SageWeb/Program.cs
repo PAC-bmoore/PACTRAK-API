@@ -1,31 +1,22 @@
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.Identity.Web;
-using PAC.SageWeb.Auth;
 
 var builder = WebApplication.CreateBuilder(args);
 
 var sqlConnStr = builder.Configuration.GetConnectionString("PACTRAK-SQL");
 var sageConnStr = builder.Configuration.GetConnectionString("PACTRAK-Sage");
 
-// Two ways in: an Entra token for this API's app registration, or an
-// issued API key (ApiKeys section). Every endpoint requires one of them;
-// only /health is open, for the host's probe.
+// This service is reached only from PAC.Web.API on the web server, which
+// holds the Entra gate. The token scheme stays for the controllers that
+// ask for it ([Authorize] on Customer).
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAd"));
-builder.Services.AddAuthentication()
-    .AddScheme<AuthenticationSchemeOptions, ApiKeyAuthenticationHandler>(ApiKeyAuthenticationHandler.SchemeName, null);
-builder.Services.AddAuthorization(options =>
-{
-    var caller = new AuthorizationPolicyBuilder(JwtBearerDefaults.AuthenticationScheme, ApiKeyAuthenticationHandler.SchemeName)
-        .RequireAuthenticatedUser()
-        .Build();
-    options.DefaultPolicy = caller;
-    options.FallbackPolicy = caller;
-});
 
-builder.Services.AddControllers();
+// Property names go out as written in the classes (PascalCase), the shape
+// the portal reads on the tracking routes. The proxy reads the other
+// routes case-insensitively, so nothing changes for them.
+builder.Services.AddControllers()
+    .AddJsonOptions(options => options.JsonSerializerOptions.PropertyNamingPolicy = null);
 builder.Services.AddProblemDetails();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
@@ -35,7 +26,7 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi().AllowAnonymous();
+    app.MapOpenApi();
 }
 
 // an unhandled exception becomes a plain problem response, never the
@@ -48,7 +39,7 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapGet("/health", () => Results.Ok(new { status = "up" })).AllowAnonymous();
+app.MapGet("/health", () => Results.Ok(new { status = "up" }));
 app.MapControllers();
 
 app.Run();
