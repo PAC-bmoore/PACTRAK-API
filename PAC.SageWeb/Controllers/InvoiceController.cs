@@ -20,15 +20,40 @@ namespace PAC.SageWeb.Controllers
 
         // GET api/<InvoiceController>/5
         [HttpGet("{id}")]
-        public string Get(int id)
+        public ActionResult<Invoice> Get(int id)
         {
-            return "value";
+            try
+            {
+                Invoice item = InvoiceDL.GetTrackingInvoiceBySONO(id.ToString());
+
+                return Ok(item);
+            }
+
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex);
+            }
+        }
+
+        [HttpGet("Detail/{id}/{custNo}")]
+        public ActionResult<List<InvoiceItem>> GetInvoiceLineItems(int id, string custNo)
+        {
+            try
+            {
+                List<InvoiceItem> list = InvoiceDL.GetInvoiceTransactions(id.ToString(), custNo);
+
+                return Ok(list);
+            }
+
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex);
+            }
         }
 
         [HttpGet("{custNo}/{minDate}/{maxDate}")]
-        public ActionResult<Invoice> GetInvoiceByCustInvNo(string custNo, DateTime minDate, DateTime maxDate)
+        public ActionResult<List<Invoice>> GetInvoiceByCustDateRange(string custNo, DateTime minDate, DateTime maxDate)
         {
-            if (!Input.IsKey(custNo)) return BadRequest("customer number");
             try
             {
                 List<Invoice> list = InvoiceDL.GetInvoicesByCustDateRange(custNo, minDate, maxDate);
@@ -38,29 +63,10 @@ namespace PAC.SageWeb.Controllers
 
             catch (Exception ex)
             {
-                return Problem(statusCode: StatusCodes.Status500InternalServerError, title: "The operations database did not answer.");
+                return StatusCode(StatusCodes.Status500InternalServerError, ex);
             }
         }
 
-        [HttpGet("Detail/{custNo}/{invNo}/{sono}")]
-        public ActionResult<Invoice> GetInvoiceByCustInvNo(string custNo, string invNo, string sono)
-        {
-            if (!Input.IsKey(custNo)) return BadRequest("customer number");
-            try
-            {
-                Invoice item = InvoiceDL.GetInvoiceBySONO(sono, invNo);
-                if (item == null)
-                    return NotFound(invNo);
-
-                item.Items = InvoiceDL.GetInvoiceTransactions(invNo, custNo);
-                return Ok(item);
-            }
-
-            catch (Exception ex)
-            {
-                return Problem(statusCode: StatusCodes.Status500InternalServerError, title: "The operations database did not answer.");
-            }
-        }
 
         // POST api/<InvoiceController>
         [HttpPost]

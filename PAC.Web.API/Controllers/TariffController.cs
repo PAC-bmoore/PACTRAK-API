@@ -1,4 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using PAC.Common.Sage;
+using PAC.DataLayer.Sage;
+using PAC.DataLayer.API;
+using Microsoft.AspNetCore.Authorization;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -6,6 +10,7 @@ namespace PAC.Web.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class TariffController : ControllerBase
     {
         // GET: api/<TariffController>
@@ -21,6 +26,39 @@ namespace PAC.Web.API.Controllers
         {
             return "value";
         }
+
+        [HttpGet("min/{custNo}")]
+        public ActionResult<List<Tariff>> GetMinTariffs(string custNo)
+        {
+            try
+            {
+                List<Tariff> list = TariffAPI.GetMinTariffs(custNo);
+
+                return Ok(list);
+            }
+
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex);
+            }
+        }
+
+        [HttpGet("{custNo}/{origin}/{dest}")]
+        public ActionResult<List<Tariff>> GetTariffsByOriginDest(string custNo, string origin, string dest)
+        {
+            try
+            {
+                List<Tariff> list = TariffAPI.GetTariffsByOriginDest(custNo, origin, dest);
+
+                return Ok(list);
+            }
+
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex);
+            }
+        }
+
 
         // POST api/<TariffController>
         [HttpPost]

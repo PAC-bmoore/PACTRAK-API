@@ -8,19 +8,17 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace PAC.DataLayer.API
 {
-    public class TariffAPI
+    public class TariffAPI : BaseDL
     {
+        #region GetMinTariffs
         public static List<Tariff> GetMinTariffs(string custNo)
         {
+            
             List<Tariff> item = null;
 
             try
             {
-                //AppSetting setting = SettingsDL.GetAppSetting("Sage Data URL");
-                string APIURL = "http://10.0.0.6/PACTRAK";
-
-//                var client = new RestClient(string.Format("{0}/api/Customer/{1}", setting.SettingValue, custNo));
-                var client = new RestClient(string.Format("{0}/api/min/{1}", APIURL, custNo));
+                var client = new RestClient(string.Format("{0}/api/Tariff/min/{1}", BaseAPIUrl, custNo));
                 var request = new RestRequest();
                 request.Method = Method.Get;
                 RestResponse response = client.Execute(request);
@@ -35,5 +33,31 @@ namespace PAC.DataLayer.API
 
             return item;
         }
+        #endregion
+
+        #region GetTariffsByOriginDest
+        public static List<Tariff> GetTariffsByOriginDest(string custNo, string origin, string dest)
+        {
+
+            List<Tariff> item = null;
+
+            try
+            {
+                var client = new RestClient(string.Format("{0}/api/Tariff/{1}/{2}/{3}", BaseAPIUrl, custNo, origin, dest));
+                var request = new RestRequest();
+                request.Method = Method.Get;
+                RestResponse response = client.Execute(request);
+
+                item = JsonConvert.DeserializeObject<List<Tariff>>(response.Content);
+            }
+
+            catch (Exception ex)
+            {
+                throw (ex);
+            }
+
+            return item;
+        }
+        #endregion
     }
 }

@@ -18,10 +18,19 @@ namespace PAC.SageWeb.Controllers
         }
 
         // GET api/<PODController>/5
-        [HttpGet("{id}")]
-        public ActionResult Get(int id)
+        [HttpGet("{awb}")]
+        public ActionResult<PODItem> Get(string awb)
         {
-            return BadRequest();
+            try
+            {
+                List<PODItem> list = PODDL.GetPODInformation(awb);
+                return Ok(list);
+            }
+
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex);
+            }
         }
 
         [HttpGet("{custNo}/{minDate}/{maxDate}")]

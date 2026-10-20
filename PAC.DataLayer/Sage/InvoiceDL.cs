@@ -44,10 +44,10 @@ namespace PAC.DataLayer.Sage
                         item = new Invoice();
 
                         if (reader["ornum"] != (object)DBNull.Value)
-                            item.Sono = reader["ornum"].ToString();
+                            item.Sono = reader["ornum"].ToString().Trim();
 
                         if (reader["Invno"] != (object)DBNull.Value)
-                            item.InvoiceNumber = reader["Invno"].ToString();
+                            item.InvoiceNumber = reader["Invno"].ToString().Trim();
 
                         if (reader["Invdte"] != (object)DBNull.Value)
                         {
@@ -90,103 +90,6 @@ namespace PAC.DataLayer.Sage
             }
 
             return list;
-        }
-        #endregion
-
-        #region GetInvoiceBySONO
-        public static Invoice GetInvoiceBySONO(string sono, string invoiceNum)
-        {
-            Invoice item = null;
-            OleDbConnection conn = null;
-
-            try
-            {
-                conn = new OleDbConnection(SageConn);
-                conn.Open();
-
-                string query = "SELECT A.INVNO as Air_Waybill, S.ORIGIN as Origin, S.DEST as Destination, S.PIECES as Total_Pieces_Shipped, " +
-                    "S.WEIGHT as Actual_Weight, S.WEIGHT as Chargeable_Weight, S.POOFKGS as Weight_Unit, A.INVDTE as Invoice_Date, " +
-                    "A.INVAMT as Invoice_Amount, S.SONO, A.ORDATE, a.tax, s.serv_level,s.Ftype,s.pterms, s.ponum, s.custno " +
-                    "FROM ARMAST01 A " +
-                    "LEFT JOIN SOMAST01 S ON S.SONO = A.ORNUM " +
-                    "Where ALLTRIM(S.SONO) = '" + sono + "' " +
-                    "AND ALLTRIM(A.INVNO) = '" + invoiceNum + "' " +
-                    "ORDER BY S.SONO DESC";
-
-                OleDbCommand cmd = new OleDbCommand(query, conn);
-                OleDbDataReader reader = cmd.ExecuteReader();
-
-                if (reader != null)
-                {
-                    if (reader.Read())
-                    {
-                        item = new Invoice();
-/*
-                        if (reader["custno"] != (object)DBNull.Value)
-                            item.Customer = reader["custno"].ToString().Trim();
-
-                        if (reader["Air_Waybill"] != (object)DBNull.Value)
-                            item.AirWayBillNum = reader["Air_Waybill"].ToString().Trim();
-
-                        if (reader["Origin"] != (object)DBNull.Value)
-                            item.Origin = reader["Origin"].ToString().Trim();
-
-                        if (reader["Destination"] != (object)DBNull.Value)
-                            item.Destination = reader["Destination"].ToString().Trim();
-
-                        if (reader["Total_Pieces_Shipped"] != (object)DBNull.Value)
-                            item.TotalPiecesShipped = Convert.ToInt32(reader["Total_Pieces_Shipped"].ToString());
-
-                        if (reader["Actual_Weight"] != (object)DBNull.Value)
-                            item.ActualWeight = Convert.ToDecimal(reader["Actual_Weight"].ToString());
-
-                        if (reader["Chargeable_Weight"] != (object)DBNull.Value)
-                            item.ChargeableWeight = Convert.ToDecimal(reader["Chargeable_Weight"].ToString());
-
-                        if (reader["Weight_Unit"] != (object)DBNull.Value)
-                            item.UnitOfMeasure = reader["Weight_Unit"].ToString().Trim();
-
-                        if (reader["Invoice_Date"] != (object)DBNull.Value)
-                            item.InvoiceDate = reader.GetDateTime(reader.GetOrdinal("Invoice_Date"));
-
-                        if (reader["Invoice_Amount"] != (object)DBNull.Value)
-                            item.InvoiceTotal = reader.GetDecimal(reader.GetOrdinal("Invoice_Amount"));
-
-                        if (reader["tax"] != (object)DBNull.Value)
-                            item.InvoiceTax = reader.GetDecimal(reader.GetOrdinal("tax"));
-
-                        if (reader["SONO"] != (object)DBNull.Value)
-                            item.SalesOrderNumber = reader["SONO"].ToString().Trim();
-
-                        if (reader["ORDATE"] != (object)DBNull.Value)
-                            item.OrderDate = reader.GetDateTime(reader.GetOrdinal("ORDATE"));
-
-                        if (reader["serv_level"] != (object)DBNull.Value)
-                            item.ServiceLevel = reader["serv_level"].ToString().Trim();
-
-                        if (reader["Ftype"] != (object)DBNull.Value)
-                            item.FreightType = reader["Ftype"].ToString().Trim();
-
-                        if (reader["pterms"] != (object)DBNull.Value)
-                            item.PaymentTerms = reader["pterms"].ToString().Trim();
-
-                        if (reader["ponum"] != (object)DBNull.Value)
-                            item.SpotNumber = reader["ponum"].ToString().Trim();*/
-                    }
-                }
-            }
-
-            catch (Exception ex)
-            {
-                throw (ex);
-            }
-
-            finally
-            {
-                conn.Close();
-            }
-
-            return item;
         }
         #endregion
 
@@ -247,6 +150,119 @@ namespace PAC.DataLayer.Sage
             }
 
             return list;
+        }
+        #endregion
+
+        #region GetTrackingInvoiceBySONO
+        public static Invoice GetTrackingInvoiceBySONO(string sono)
+        {
+            Invoice item = null;
+            OleDbConnection conn = null;
+
+            try
+            {
+                conn = new OleDbConnection(SageConn);
+                conn.Open();
+
+                string query = "SELECT Invno, Invdte, ponum, refno, taxrate, tax, invamt, paidamt, balance, pterms, Dtepaid, ordate, ornum, exchrat " +
+                    "FROM armast01 " +
+                    "WHERE VAL(ornum) = VAL('" + sono + "') " + 
+                    "ORDER BY ordate desc";
+
+                OleDbCommand cmd = new OleDbCommand(query, conn);
+                OleDbDataReader reader = cmd.ExecuteReader();
+
+                if (reader != null)
+                {
+                    if (reader.Read())
+                    {
+                        item = new Invoice();
+
+                        if (reader["Invno"] != (object)DBNull.Value)
+                            item.InvoiceNumber = reader["Invno"].ToString().Trim(); ;
+
+                        if (reader["Invdte"] != (object)DBNull.Value)
+                            item.InvoiceDate = reader.GetDateTime(reader.GetOrdinal("Invdte"));
+
+                        if (reader["tax"] != (object)DBNull.Value)
+                            item.InvoiceTax = Convert.ToDecimal(reader["tax"].ToString());
+
+                        if (reader["invamt"] != (object)DBNull.Value)
+                            item.InvoiceTotal = Convert.ToDecimal(reader["invamt"].ToString());
+
+                        if (reader["paidamt"] != (object)DBNull.Value)
+                            item.AmountPaid = Convert.ToDecimal(reader["paidamt"].ToString());
+
+                        if (reader["balance"] != (object)DBNull.Value)
+                            item.Balance = Convert.ToDecimal(reader["balance"].ToString());
+
+                        if (reader["Dtepaid"] != (object)DBNull.Value)
+                            item.PaidDate = reader.GetDateTime(reader.GetOrdinal("Dtepaid"));
+
+                        if (reader["ordate"] != (object)DBNull.Value)
+                            item.OrderDate = reader.GetDateTime(reader.GetOrdinal("ordate"));
+
+                        item.Sono = sono;
+
+                        /*
+
+                                                if (reader["Air_Waybill"] != (object)DBNull.Value)
+                                                    item.AirWayBillNum = reader["Air_Waybill"].ToString().Trim();
+
+
+                                                if (reader["Total_Pieces_Shipped"] != (object)DBNull.Value)
+                                                    item.TotalPiecesShipped = Convert.ToInt32(reader["Total_Pieces_Shipped"].ToString());
+
+                                                if (reader["Actual_Weight"] != (object)DBNull.Value)
+                                                    item.ActualWeight = Convert.ToDecimal(reader["Actual_Weight"].ToString());
+
+                                                if (reader["Chargeable_Weight"] != (object)DBNull.Value)
+                                                    item.ChargeableWeight = Convert.ToDecimal(reader["Chargeable_Weight"].ToString());
+
+                                                if (reader["Weight_Unit"] != (object)DBNull.Value)
+                                                    item.UnitOfMeasure = reader["Weight_Unit"].ToString().Trim();
+
+                                                if (reader["Invoice_Date"] != (object)DBNull.Value)
+                                                    item.InvoiceDate = reader.GetDateTime(reader.GetOrdinal("Invoice_Date"));
+
+                                                if (reader["Invoice_Amount"] != (object)DBNull.Value)
+                                                    item.InvoiceTotal = reader.GetDecimal(reader.GetOrdinal("Invoice_Amount"));
+
+                                                if (reader["tax"] != (object)DBNull.Value)
+                                                    item.InvoiceTax = reader.GetDecimal(reader.GetOrdinal("tax"));
+
+                                                if (reader["SONO"] != (object)DBNull.Value)
+                                                    item.SalesOrderNumber = reader["SONO"].ToString().Trim();
+
+                                                if (reader["ORDATE"] != (object)DBNull.Value)
+                                                    item.OrderDate = reader.GetDateTime(reader.GetOrdinal("ORDATE"));
+
+                                                if (reader["serv_level"] != (object)DBNull.Value)
+                                                    item.ServiceLevel = reader["serv_level"].ToString().Trim();
+
+                                                if (reader["Ftype"] != (object)DBNull.Value)
+                                                    item.FreightType = reader["Ftype"].ToString().Trim();
+
+                                                if (reader["pterms"] != (object)DBNull.Value)
+                                                    item.PaymentTerms = reader["pterms"].ToString().Trim();
+
+                                                if (reader["ponum"] != (object)DBNull.Value)
+                                                    item.SpotNumber = reader["ponum"].ToString().Trim();*/
+                    }
+                }
+            }
+
+            catch (Exception ex)
+            {
+                throw (ex);
+            }
+
+            finally
+            {
+                conn.Close();
+            }
+
+            return item;
         }
         #endregion
 
