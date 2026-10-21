@@ -35,13 +35,13 @@ namespace PAC.Common.Sage
         public string currency { get; set; } = string.Empty;
         [JsonPropertyName("Fax")]
         public string faxno { get; set; } = string.Empty;
-        [JsonPropertyName("WebPassword")]
+        [JsonIgnore]
         public string webpwd { get; set; } = string.Empty;
         [JsonPropertyName("ID")]
         public int id_col { get; set; }
         [JsonPropertyName("UserName")]
         public string username { get; set; } = string.Empty;
-        [JsonPropertyName("WebHashPassword")]
+        [JsonIgnore]
         public string webpwdhash { get; set; } = string.Empty;
         [JsonPropertyName("CustomerStatus")]
         public string custstat {  get; set; }  = string.Empty;
