@@ -86,10 +86,17 @@ namespace PAC.DataLayer.Sage
                             item.SignedBy = reader["SignBy"].ToString().Trim();
 
                         if (reader["pickdate"] != (object)DBNull.Value)
-                            item.PickDate = reader["pickdate"].ToString().Trim();
+                        {
+                            item.SignedDate = reader.GetDateTime(reader.GetOrdinal("pickdate"));
 
-                        if (reader["picktime"] != (object)DBNull.Value)
-                            item.PickTime = reader["picktime"].ToString().Trim();
+                            if (reader["picktime"] != (object)DBNull.Value)
+                            {
+                                string tmpTime = reader["picktime"].ToString().Trim();
+                                string[] arTime = tmpTime.Split(":");
+                                item.SignedDate = item.SignedDate.AddHours(Convert.ToInt32(arTime[0]));
+                                item.SignedDate = item.SignedDate.AddMinutes(Convert.ToInt32(arTime[1]));
+                            }
+                        }
 
                         if (reader["PCShipped"] != (object)DBNull.Value)
                             item.PiecesShipped = Convert.ToInt32(reader["PCShipped"].ToString());

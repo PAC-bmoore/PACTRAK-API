@@ -26,6 +26,22 @@ namespace PAC.SageWeb.Controllers
             return "value";
         }
 
+        [HttpGet("recent/{custNo}/{count}")]
+        public ActionResult<List<AirWaybillItem>> GetMinTariffs(string custNo, int count)
+        {
+            try
+            {
+                List<AirWaybillItem> list = AirWaybillDL.GetRecentAirbills(custNo, count);
+
+                return Ok(list);
+            }
+
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex);
+            }
+        }
+
         // POST api/<TrackingController>
         [HttpPost]
         public void Post([FromBody] string value)

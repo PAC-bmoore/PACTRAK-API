@@ -22,8 +22,7 @@ namespace PAC.Common.Sage
         public int PiecesShipped { get; set; }
         public string SignedBy { get; set; } = string.Empty;
         public string Status { get; set; } = string.Empty;
-        public string PickDate { get; set; } = string.Empty;
-        public string PickTime { get; set; } = string.Empty;
+        public DateTime SignedDate { get; set; }
         public DateTime TansferDate { get; set; }
         public string TansferTo { get; set; } = string.Empty;
         public string TansferETA { get; set; } = string.Empty;
