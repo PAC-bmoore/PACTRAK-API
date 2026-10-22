@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
@@ -6,6 +7,7 @@ namespace PAC.Common.Sage
 {
     public class InvoiceDetail
     {
+        [JsonPropertyName("AirWayBillNum")]
         public string AWB { get; set; } = string.Empty;
         public string Origin { get; set; } = string.Empty;
         public string Destination { get; set; } = string.Empty;

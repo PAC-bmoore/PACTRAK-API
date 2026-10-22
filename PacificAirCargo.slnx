@@ -2,5 +2,6 @@
   <Project Path="PAC.Common/PAC.Common.csproj" Id="d8756e2f-a70f-4e31-b3ce-663144a0ef4b" />
   <Project Path="PAC.DataLayer/PAC.DataLayer.csproj" Id="d4bd63a2-4a33-4fbe-8894-f3b311119632" />
   <Project Path="PAC.SageWeb/PAC.SageWeb.csproj" />
+  <Project Path="PAC.Web.API.Tests/PAC.Web.API.Tests.csproj" />
   <Project Path="PAC.Web.API/PAC.Web.API.csproj" Id="2e7c26b9-d26b-4db4-8b13-241c7da9b5ee" />
 </Solution>

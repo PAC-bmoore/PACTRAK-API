@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using PAC.Common.Sage;
+using Input = PAC.Common.Tracking.Input;
 using PAC.DataLayer.Sage;
 using System.Net;
 
@@ -25,6 +26,7 @@ namespace PAC.SageWeb.Controllers
         [HttpGet("{custNum}")]
         public ActionResult<Customer> Get(string custNum)
         {
+            if (!Input.IsKey(custNum)) return BadRequest("customer number");
             try
             {
                 Customer item = CustomerDL.GetCustomer(custNum);
@@ -33,7 +35,7 @@ namespace PAC.SageWeb.Controllers
 
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, ex);
+                return Problem(statusCode: StatusCodes.Status500InternalServerError, title: "The operations database did not answer.");
             }
         }
 
@@ -56,7 +58,7 @@ namespace PAC.SageWeb.Controllers
 
             catch(Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, ex);
+                return Problem(statusCode: StatusCodes.Status500InternalServerError, title: "The operations database did not answer.");
             }
         }
 

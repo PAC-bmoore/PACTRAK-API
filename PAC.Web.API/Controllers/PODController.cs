@@ -13,13 +13,6 @@ namespace PAC.Web.API.Controllers
     [Authorize]
     public class PODController : ControllerBase
     {
-        // GET: api/<PODController>
-        [HttpGet]
-        public IEnumerable<string> Get()
-        {
-            return new string[] { "value1", "value2" };
-        }
-
         // GET api/<PODController>/5
         [HttpGet("{awb}")]
         public ActionResult<PODItem> Get(string awb)

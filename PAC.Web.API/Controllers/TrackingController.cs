@@ -1,43 +1,60 @@
-﻿using Microsoft.AspNetCore.Mvc;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+using System.Text;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using PAC.Common.Tracking;
+using PAC.Web.API.Services;
 
 namespace PAC.Web.API.Controllers
 {
-    [Route("api/[controller]")]
+    /// <summary>
+    /// Tracking reads for the PAC Track portal. Each route here mirrors the
+    /// same route on PAC.SageWeb and forwards to it unchanged: the route
+    /// values are checked, the query string goes through as given (the
+    /// inner service validates the dates), and the answer comes back byte
+    /// for byte. Dates are ISO (yyyy-MM-dd).
+    /// </summary>
     [ApiController]
-    public class TrackingController : ControllerBase
+    [Authorize]
+    public class TrackingController(InnerApi inner) : ControllerBase
     {
-        // GET: api/<TrackingController>
-        [HttpGet]
-        public IEnumerable<string> Get()
+        /// <summary>Orders dated in the range; custno narrows to one customer.</summary>
+        [HttpGet("api/awbs")]
+        public Task<IActionResult> AwbsByDateRange(CancellationToken ct)
+            => Forward("api/awbs", ct);
+
+        /// <summary>A customer's open orders.</summary>
+        [HttpGet("api/customers/{custno}/awbs/open")]
+        public Task<IActionResult> OpenAwbs(string custno, CancellationToken ct)
+            => Input.IsKey(custno) ? Forward($"api/customers/{custno}/awbs/open", ct) : Rejected("custno");
+
+        [HttpGet("api/awbs/{sono}/manifest")]
+        public Task<IActionResult> Manifest(string sono, CancellationToken ct)
+            => Input.IsKey(sono) ? Forward($"api/awbs/{sono}/manifest", ct) : Rejected("sono");
+
+        [HttpGet("api/awbs/{sono}/pod")]
+        public Task<IActionResult> PodForAwb(string sono, CancellationToken ct)
+            => Input.IsKey(sono) ? Forward($"api/awbs/{sono}/pod", ct) : Rejected("sono");
+
+        [HttpGet("api/pod")]
+        public Task<IActionResult> PodByDateRange(CancellationToken ct)
+            => Forward("api/pod", ct);
+
+        [HttpGet("api/invoices")]
+        public Task<IActionResult> InvoicesByDateRange(CancellationToken ct)
+            => Forward("api/invoices", ct);
+
+        private async Task<IActionResult> Forward(string path, CancellationToken ct)
         {
-            return new string[] { "value1", "value2" };
+            var answer = await inner.GetAsync(path + Request.QueryString.Value, ct);
+            return new ContentResult
+            {
+                StatusCode = answer.Status,
+                ContentType = answer.ContentType,
+                Content = Encoding.UTF8.GetString(answer.Body),
+            };
         }
 
-        // GET api/<TrackingController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
-        {
-            return "value";
-        }
-
-        // POST api/<TrackingController>
-        [HttpPost]
-        public void Post([FromBody] string value)
-        {
-        }
-
-        // PUT api/<TrackingController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
-
-        // DELETE api/<TrackingController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
-        }
+        private Task<IActionResult> Rejected(string what)
+            => Task.FromResult<IActionResult>(BadRequest(what));
     }
 }
