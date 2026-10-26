@@ -24,6 +24,8 @@ namespace PAC.Common.Sage
         public string Status { get; set; } = string.Empty;
         public DateTime SignedDate { get; set; }
         public DateTime TansferDate { get; set; }
+        public string PickDate { get; set; } = string.Empty;
+        public string PickTime { get; set; } = string.Empty;
         public string TansferTo { get; set; } = string.Empty;
         public string TansferETA { get; set; } = string.Empty;
         public string Carrier { get; set; } = string.Empty;

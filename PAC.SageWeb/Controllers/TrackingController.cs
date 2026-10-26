@@ -10,67 +10,85 @@ namespace PAC.SageWeb.Controllers
     /// shapes the portal client already uses (the same shapes the August
     /// PACTRAK service produced). Dates are ISO (yyyy-MM-dd).
     /// </summary>
+    [Route("api/[controller]")]
     [ApiController]
     public class TrackingController(ILogger<TrackingController> logger) : ControllerBase
     {
-        /// <summary>Orders dated in the range; custno narrows to one customer.</summary>
-        [HttpGet("api/awbs")]
-        public ActionResult<List<AwbHeader>> AwbsByDateRange([FromQuery] DateTime from, [FromQuery] DateTime to, [FromQuery] string? custno = null)
+        [HttpGet("awb/{custno}/open")]
+        public ActionResult<List<AirWaybillItem>> GetOpenAWBs(string custno)
         {
-            if (to < from) return BadRequest("to is before from");
-            if (custno is not null && !Input.IsKey(custno)) return BadRequest("custno");
-            return Try(() => TrackingDL.GetHeadersByDateRange(from, to, custno));
+            try
+            {
+
+                List<AirWaybillItem> list = AirWaybillDL.GetOpenAirWaybills(custno);
+
+                return Ok(list);
+            }
+
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "GetOpenAWBs failed for {Path}", Request.Path);
+                return StatusCode(StatusCodes.Status500InternalServerError, "The process encountered an error");
+            }
         }
 
-        /// <summary>A customer's open orders.</summary>
-        [HttpGet("api/customers/{custno}/awbs/open")]
-        public ActionResult<List<AwbHeader>> OpenAwbs(string custno)
+        [HttpGet("awb/{sono}/manifest")]
+        public ActionResult<List<ManifestItem>> GetManifestItems(string sono)
         {
-            if (!Input.IsKey(custno)) return BadRequest("custno");
-            return Try(() => TrackingDL.GetOpenHeaders(custno));
+            try
+            {
+                
+                List<ManifestItem> list = ManifestDL.GetManifestItems(sono);
+
+                return Ok(list);
+            }
+
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "GetManifestItems failed for {Path}", Request.Path);
+                return StatusCode(StatusCodes.Status500InternalServerError, "The process encountered an error");
+            }
         }
 
-        [HttpGet("api/awbs/{sono}/manifest")]
-        public ActionResult<List<ManifestItem>> Manifest(string sono)
+        [HttpGet("awb/recent/{custNo}/{count}")]
+        public ActionResult<List<AirWaybillItem>> GetRecentAWBs(string custNo, int count)
         {
-            if (!Input.IsKey(sono)) return BadRequest("sono");
-            return Try(() => TrackingDL.GetManifestItems(sono));
+            try
+            {
+                List<AirWaybillItem> list = AirWaybillDL.GetRecentAirbills(custNo, count);
+
+                return Ok(list);
+            }
+
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Tracking read failed for {Path}", Request.Path);
+                return StatusCode(StatusCodes.Status500InternalServerError, "The process encountered an error");
+            }
         }
 
-        [HttpGet("api/awbs/{sono}/pod")]
-        public ActionResult<List<PODHistoryItem>> PodForAwb(string sono)
+        [HttpGet("awb/shipment/{sono}/details")]
+        public ActionResult<List<ShipmentItem>> GetShipmentDetails(string sono)
         {
-            if (!Input.IsKey(sono)) return BadRequest("sono");
-            return Try(() => TrackingDL.GetPodsForAwb(sono));
+            try
+            {
+                List<ShipmentItem> list = AirWaybillDL.GetShipmentDetails(sono);
+
+                return Ok(list);
+            }
+
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Tracking read failed for {Path}", Request.Path);
+                return StatusCode(StatusCodes.Status500InternalServerError, "The process encountered an error");
+            }
         }
 
         // POST api/<TrackingController>
         [HttpPost]
-        public void Post([FromBody] string value)
+        public ActionResult<string> Post([FromBody] string value)
         {
-            if (to < from) return BadRequest("to is before from");
-            return Try(() => TrackingDL.GetPodsByDateRange(from, to));
-        }
-
-        [HttpGet("api/invoices")]
-        public ActionResult<List<InvoiceDetail>> InvoicesByDateRange([FromQuery] DateTime from, [FromQuery] DateTime to)
-        {
-            if (to < from) return BadRequest("to is before from");
-            return Try(() => TrackingDL.GetInvoicesByDateRange(from, to));
-        }
-
-        private ActionResult<T> Try<T>(Func<T> read)
-        {
-            try
-            {
-                return Ok(read());
-            }
-            catch (Exception ex)
-            {
-                // the detail goes to the log; the caller gets a plain answer
-                logger.LogError(ex, "Tracking read failed for {Path}", Request.Path);
-                return Problem(statusCode: StatusCodes.Status500InternalServerError, title: "The operations database did not answer.");
-            }
+            return BadRequest("Not implemented");
         }
     }
 }

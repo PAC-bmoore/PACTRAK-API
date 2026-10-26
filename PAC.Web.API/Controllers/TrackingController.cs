@@ -1,8 +1,11 @@
-using System.Text;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using PAC.Common.Sage;
 using PAC.Common.Tracking;
+using PAC.DataLayer.API;
+using PAC.DataLayer.Sage;
 using PAC.Web.API.Services;
+using System.Text;
 
 namespace PAC.Web.API.Controllers
 {
@@ -13,48 +16,85 @@ namespace PAC.Web.API.Controllers
     /// inner service validates the dates), and the answer comes back byte
     /// for byte. Dates are ISO (yyyy-MM-dd).
     /// </summary>
+    [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
-    public class TrackingController(InnerApi inner) : ControllerBase
+   // [Authorize]
+    public class TrackingController(ILogger<TrackingController> logger) : ControllerBase
     {
-        /// <summary>Orders dated in the range; custno narrows to one customer.</summary>
-        [HttpGet("api/awbs")]
-        public Task<IActionResult> AwbsByDateRange(CancellationToken ct)
-            => Forward("api/awbs", ct);
-
-        /// <summary>A customer's open orders.</summary>
-        [HttpGet("api/customers/{custno}/awbs/open")]
-        public Task<IActionResult> OpenAwbs(string custno, CancellationToken ct)
-            => Input.IsKey(custno) ? Forward($"api/customers/{custno}/awbs/open", ct) : Rejected("custno");
-
-        [HttpGet("api/awbs/{sono}/manifest")]
-        public Task<IActionResult> Manifest(string sono, CancellationToken ct)
-            => Input.IsKey(sono) ? Forward($"api/awbs/{sono}/manifest", ct) : Rejected("sono");
-
-        [HttpGet("api/awbs/{sono}/pod")]
-        public Task<IActionResult> PodForAwb(string sono, CancellationToken ct)
-            => Input.IsKey(sono) ? Forward($"api/awbs/{sono}/pod", ct) : Rejected("sono");
-
-        [HttpGet("api/pod")]
-        public Task<IActionResult> PodByDateRange(CancellationToken ct)
-            => Forward("api/pod", ct);
-
-        [HttpGet("api/invoices")]
-        public Task<IActionResult> InvoicesByDateRange(CancellationToken ct)
-            => Forward("api/invoices", ct);
-
-        private async Task<IActionResult> Forward(string path, CancellationToken ct)
+        [HttpGet("awb/{custno}/open")]
+        public ActionResult<List<AirWaybillItem>> GetOpenAWBs(string custno)
         {
-            var answer = await inner.GetAsync(path + Request.QueryString.Value, ct);
-            return new ContentResult
+            try
             {
-                StatusCode = answer.Status,
-                ContentType = answer.ContentType,
-                Content = Encoding.UTF8.GetString(answer.Body),
-            };
+                List<AirWaybillItem> list = TrackingAPI.GetOpenAWBs(custno);
+
+                return Ok(list);
+            }
+
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "GetOpenAWBs failed for {Path}", Request.Path);
+                return StatusCode(StatusCodes.Status500InternalServerError, "The process encountered an error");
+            }
         }
 
-        private Task<IActionResult> Rejected(string what)
-            => Task.FromResult<IActionResult>(BadRequest(what));
+        [HttpGet("awb/{sono}/manifest")]
+        public ActionResult<List<ManifestItem>> GetManifestItems(string sono)
+        {
+            try
+            {
+
+                List<ManifestItem> list = TrackingAPI.GetManifestItems(sono);
+
+                return Ok(list);
+            }
+
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "GetManifestItems failed for {Path}", Request.Path);
+                return StatusCode(StatusCodes.Status500InternalServerError, "The process encountered an error");
+            }
+        }
+
+        [HttpGet("awb/recent/{custNo}/{count}")]
+        public ActionResult<List<AirWaybillItem>> GetRecentAWBs(string custNo, int count)
+        {
+            try
+            {
+                List<AirWaybillItem> list = AirWaybillAPI.GetRecentAirbills(custNo, count);
+
+                return Ok(list);
+            }
+
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Tracking read failed for {Path}", Request.Path);
+                return StatusCode(StatusCodes.Status500InternalServerError, "The process encountered an error");
+            }
+        }
+
+        [HttpGet("awb/shipment/{sono}/details")]
+        public ActionResult<List<ShipmentItem>> GetShipmentDetails(string sono)
+        {
+            try
+            {
+                List<ShipmentItem> list = AirWaybillAPI.GetShipmentDetails(sono);
+
+                return Ok(list);
+            }
+
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Tracking read failed for {Path}", Request.Path);
+                return StatusCode(StatusCodes.Status500InternalServerError, "The process encountered an error");
+            }
+        }
+
+        // POST api/<TrackingController>
+        [HttpPost]
+        public ActionResult<string> Post([FromBody] string value)
+        {
+            return BadRequest("Not implemented");
+        }
     }
-}
+ }
