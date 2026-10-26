@@ -18,7 +18,7 @@ namespace PAC.Web.API.Controllers
     /// </summary>
     [Route("api/[controller]")]
     [ApiController]
-   // [Authorize]
+    [Authorize]
     public class TrackingController(ILogger<TrackingController> logger) : ControllerBase
     {
         [HttpGet("awb/{custno}/open")]
