@@ -92,9 +92,13 @@ namespace PAC.DataLayer.Sage
                             if (reader["picktime"] != (object)DBNull.Value)
                             {
                                 string tmpTime = reader["picktime"].ToString().Trim();
-                                string[] arTime = tmpTime.Split(":");
-                                item.SignedDate = item.SignedDate.AddHours(Convert.ToInt32(arTime[0]));
-                                item.SignedDate = item.SignedDate.AddMinutes(Convert.ToInt32(arTime[1]));
+
+                                if (!string.IsNullOrEmpty(tmpTime))
+                                {
+                                    string[] arTime = tmpTime.Split(":");
+                                    item.SignedDate = item.SignedDate.AddHours(Convert.ToInt32(arTime[0]));
+                                    item.SignedDate = item.SignedDate.AddMinutes(Convert.ToInt32(arTime[1]));
+                                }
                             }
                         }
 
