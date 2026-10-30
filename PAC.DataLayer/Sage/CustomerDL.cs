@@ -22,7 +22,7 @@ namespace PAC.DataLayer.Sage
 
                 string query = "SELECT custno,company,contact,title,address1,address2,city,addrstate,zip,country,phone," +
                     "currency,faxno,email,addrstate,custstat,webpwd,id_col,username,webpwdhash " +
-                    "FROM arcust01 WHERE custno = '" + custNum + "'";
+                    "FROM arcust01 WHERE ALLTRIM(custno) == '" + custNum + "'";
 
                 OleDbCommand cmd = new OleDbCommand(query, conn);
                 OleDbDataReader reader = cmd.ExecuteReader();

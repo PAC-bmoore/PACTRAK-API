@@ -27,7 +27,7 @@ namespace PAC.DataLayer.Sage
                     "FROM somast01 s " +
                     "LEFT JOIN SOPODD01 p ON VAL(p.awbno) = VAL(s.sono) " +
                     "LEFT JOIN somanf01 m on val(m.sono) = val(s.sono) " +
-                    "WHERE s.custno = '" + custNum + "' " +
+                    "WHERE ALLTRIM(s.custno) == '" + custNum + "' " +
                     "GROUP BY s.sono, s.awbprefix, s.ordate, s.origin, s.dest, s.serv_level, s.poofkgs, s.pieces, s.weight, s.commodity, s.carrier, s.dimweight, s.wtshipped, s.pcshipped, m.fltNo, m.fltdate, p.signby, p.pickdate, p.picktime " +
                     "ORDER BY ordate desc";
 
@@ -145,7 +145,7 @@ namespace PAC.DataLayer.Sage
                     "s.wtshipped, s.pcshipped, m.fltdate " +
                     "FROM somast01 s " +
                     "LEFT JOIN somanf01 m on val(m.sono) = val(s.sono) " +
-                    "WHERE s.custno = '" + custNum + "' " +
+                    "WHERE ALLTRIM(s.custno) == '" + custNum + "' " +
                     "AND s.sostat = ' ' " +
                     "AND s.pcshipped < s.pieces " +
                     "AND (m.fltdate > {^2026-01-01} or ISNULL(m.fltdate)) " +
