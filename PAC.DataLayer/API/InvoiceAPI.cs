@@ -12,7 +12,7 @@ namespace PAC.DataLayer.API
         #region GetInvoicesByCustDateRange
         public static List<Invoice> GetInvoicesByCustDateRange(string custNo, DateTime minDate, DateTime maxDate)
         {
-            List<Invoice> item = null;
+            List<Invoice>? item = null;
 
             try
             {
@@ -40,7 +40,7 @@ namespace PAC.DataLayer.API
         public static List<InvoiceItem> GetInvoiceLineItems(string invNo, string custNo)
         {
 
-            List<InvoiceItem> list = null;
+            List<InvoiceItem>? list = null;
 
             try
             {
@@ -68,7 +68,7 @@ namespace PAC.DataLayer.API
         public static Invoice GetTrackingInvoiceBySono(string sono)
         {
 
-            Invoice item = null;
+            Invoice? item = null;
 
             try
             {

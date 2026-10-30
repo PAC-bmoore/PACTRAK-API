@@ -14,7 +14,7 @@ namespace PAC.DataLayer.API
         public static List<AirWaybillItem> GetRecentAirbills(string custNo, int count)
         {
 
-            List<AirWaybillItem> list = null;
+            List<AirWaybillItem>? list = null;
 
             try
             {
@@ -42,7 +42,7 @@ namespace PAC.DataLayer.API
         public static List<AirWaybillItem> GetOpenAirWaybills(string custNo)
         {
 
-            List<AirWaybillItem> list = null;
+            List<AirWaybillItem>? list = null;
 
             try
             {
@@ -70,7 +70,7 @@ namespace PAC.DataLayer.API
         public static List<ManifestItem> GetManifestItems(string sono)
         {
 
-            List<ManifestItem> list = null;
+            List<ManifestItem>? list = null;
 
             try
             {
@@ -98,7 +98,7 @@ namespace PAC.DataLayer.API
         public static List<ShipmentItem> GetShipmentDetails(string sono)
         {
 
-            List<ShipmentItem> list = null;
+            List<ShipmentItem>? list = null;
 
             try
             {

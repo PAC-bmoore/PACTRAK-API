@@ -14,7 +14,7 @@ namespace PAC.DataLayer.API
         #region GetCustomer
         public static Customer GetCustomer(string custNum)
         {
-            Customer item = null;
+            Customer? item = null;
 
             try
             {

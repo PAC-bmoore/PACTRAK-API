@@ -14,7 +14,7 @@ namespace PAC.DataLayer.API
         public static List<Tariff> GetMinTariffs(string custNo)
         {
             
-            List<Tariff> item = null;
+            List<Tariff>? item = null;
 
             try
             {
@@ -42,7 +42,7 @@ namespace PAC.DataLayer.API
         public static List<Tariff> GetTariffsByOriginDest(string custNo, string origin, string dest)
         {
 
-            List<Tariff> item = null;
+            List<Tariff>? item = null;
 
             try
             {

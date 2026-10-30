@@ -13,7 +13,7 @@ namespace PAC.DataLayer.API
         public static List<PODHistoryItem> GetPODHistory(string custNo, DateTime minDate, DateTime maxDate)
         {
 
-            List<PODHistoryItem> item = null;
+            List<PODHistoryItem>? item = null;
 
             try
             {
@@ -41,7 +41,7 @@ namespace PAC.DataLayer.API
         public static List<PODItem> GetPODInformation(string awb)
         {
 
-            List<PODItem> item = null;
+            List<PODItem>? item = null;
 
             try
             {
