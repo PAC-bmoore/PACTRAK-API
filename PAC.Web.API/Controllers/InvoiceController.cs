@@ -12,7 +12,7 @@ namespace PAC.Web.API.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
-    public class InvoiceController : ControllerBase
+    public class InvoiceController(ILogger<InvoiceController> logger) : ControllerBase
     {
         // GET: api/<InvoiceController>
         [HttpGet]
@@ -34,6 +34,7 @@ namespace PAC.Web.API.Controllers
 
             catch (Exception ex)
             {
+                logger.LogError(ex, "Invoice Get failed for {Path}", Request.Path);
                 return StatusCode(StatusCodes.Status500InternalServerError, "The process encountered an error");
             }
         }
@@ -51,6 +52,7 @@ namespace PAC.Web.API.Controllers
 
             catch (Exception ex)
             {
+                logger.LogError(ex, "GetInvoiceLineItems failed for {Path}", Request.Path);
                 return StatusCode(StatusCodes.Status500InternalServerError, "The process encountered an error");
             }
         }
@@ -69,6 +71,7 @@ namespace PAC.Web.API.Controllers
 
             catch (Exception ex)
             {
+                logger.LogError(ex, "GetInvoiceByCustInvNo failed for {Path}", Request.Path);
                 return StatusCode(StatusCodes.Status500InternalServerError, "The process encountered an error");
             }
         }

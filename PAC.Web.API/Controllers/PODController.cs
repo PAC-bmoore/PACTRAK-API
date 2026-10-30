@@ -12,7 +12,7 @@ namespace PAC.Web.API.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
-    public class PODController : ControllerBase
+    public class PODController(ILogger<PODController> logger) : ControllerBase
     {
         // GET api/<PODController>/5
         [HttpGet("{awb}")]
@@ -27,6 +27,7 @@ namespace PAC.Web.API.Controllers
 
             catch (Exception ex)
             {
+                logger.LogError(ex, "POD Get failed for {Path}", Request.Path);
                 return StatusCode(StatusCodes.Status500InternalServerError, "The process encountered an error");
             }
         }
@@ -43,6 +44,7 @@ namespace PAC.Web.API.Controllers
 
             catch (Exception ex)
             {
+                logger.LogError(ex, "GetPODsByCustInvNo failed for {Path}", Request.Path);
                 return StatusCode(StatusCodes.Status500InternalServerError, "The process encountered an error");
             }
         }

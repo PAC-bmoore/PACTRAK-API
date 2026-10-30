@@ -12,7 +12,7 @@ namespace PAC.Web.API.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
-    public class CustomerController : ControllerBase
+    public class CustomerController(ILogger<CustomerController> logger) : ControllerBase
     {
         // GET: api/<CustomerController>
         [HttpGet]
@@ -34,6 +34,7 @@ namespace PAC.Web.API.Controllers
 
             catch (Exception ex)
             {
+                logger.LogError(ex, "Customer Get failed for {Path}", Request.Path);
                 return StatusCode(StatusCodes.Status500InternalServerError, "The process encountered an error");
             }
         }
@@ -55,6 +56,7 @@ namespace PAC.Web.API.Controllers
 
             catch (Exception ex)
             {
+                logger.LogError(ex, "Customer Put failed for {Path}", Request.Path);
                 return StatusCode(StatusCodes.Status500InternalServerError, "The process encountered an error");
             }
         }

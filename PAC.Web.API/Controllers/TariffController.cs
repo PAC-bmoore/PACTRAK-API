@@ -12,7 +12,7 @@ namespace PAC.Web.API.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
-    public class TariffController : ControllerBase
+    public class TariffController(ILogger<TariffController> logger) : ControllerBase
     {
         // GET: api/<TariffController>
         [HttpGet]
@@ -41,6 +41,7 @@ namespace PAC.Web.API.Controllers
 
             catch (Exception ex)
             {
+                logger.LogError(ex, "GetMinTariffs failed for {Path}", Request.Path);
                 return StatusCode(StatusCodes.Status500InternalServerError, "The process encountered an error");
             }
         }
@@ -60,6 +61,7 @@ namespace PAC.Web.API.Controllers
 
             catch (Exception ex)
             {
+                logger.LogError(ex, "GetTariffsByOriginDest failed for {Path}", Request.Path);
                 return StatusCode(StatusCodes.Status500InternalServerError, "The process encountered an error");
             }
         }
