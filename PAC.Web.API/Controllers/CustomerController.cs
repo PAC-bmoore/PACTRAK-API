@@ -41,11 +41,13 @@ namespace PAC.Web.API.Controllers
 
         // POST api/<CustomerController>
         [HttpPost]
+        [Authorize(Policy = "Customer.Write")]
         public void Post([FromBody] string value)
         {
         }
 
         [HttpPut("{id}")]
+        [Authorize(Policy = "Customer.Write")]
         public ActionResult<string> Put(int id, [FromBody] Customer value)
         {
             try
@@ -63,6 +65,7 @@ namespace PAC.Web.API.Controllers
 
         // DELETE api/<CustomerController>/5
         [HttpDelete("{id}")]
+        [Authorize(Policy = "Customer.Write")]
         public void Delete(int id)
         {
         }

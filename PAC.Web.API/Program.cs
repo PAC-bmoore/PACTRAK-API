@@ -18,6 +18,11 @@ builder.Services.AddAuthorization(options =>
         policy.RequireRole("Cargo.Read");
         policy.RequireAssertion(context => context.User.HasClaim("tid", PacTenantId) || context.User.HasClaim("http://schemas.microsoft.com/identity/claims/tenantid", PacTenantId));
     });
+    options.AddPolicy("Customer.Write", policy =>
+    {
+        policy.RequireRole("Customer.Write");
+        policy.RequireAssertion(context => context.User.HasClaim("tid", PacTenantId) || context.User.HasClaim("http://schemas.microsoft.com/identity/claims/tenantid", PacTenantId));
+    });
 });
 
 var sqlConnStr = builder.Configuration.GetConnectionString("PACTRAK-SQL");
