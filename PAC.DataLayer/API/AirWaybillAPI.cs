@@ -23,6 +23,9 @@ namespace PAC.DataLayer.API
                 request.Method = Method.Get;
                 RestResponse response = client.Execute(request);
 
+                if (!response.IsSuccessful)
+                    throw new Exception(string.Format("Inner service returned {0}", (int)response.StatusCode));
+
                 list = JsonConvert.DeserializeObject<List<AirWaybillItem>>(response.Content);
             }
 
@@ -47,6 +50,9 @@ namespace PAC.DataLayer.API
                 var request = new RestRequest();
                 request.Method = Method.Get;
                 RestResponse response = client.Execute(request);
+
+                if (!response.IsSuccessful)
+                    throw new Exception(string.Format("Inner service returned {0}", (int)response.StatusCode));
 
                 list = JsonConvert.DeserializeObject<List<AirWaybillItem>>(response.Content);
             }
@@ -73,6 +79,9 @@ namespace PAC.DataLayer.API
                 request.Method = Method.Get;
                 RestResponse response = client.Execute(request);
 
+                if (!response.IsSuccessful)
+                    throw new Exception(string.Format("Inner service returned {0}", (int)response.StatusCode));
+
                 list = JsonConvert.DeserializeObject<List<ManifestItem>>(response.Content);
             }
 
@@ -97,6 +106,9 @@ namespace PAC.DataLayer.API
                 var request = new RestRequest();
                 request.Method = Method.Get;
                 RestResponse response = client.Execute(request);
+
+                if (!response.IsSuccessful)
+                    throw new Exception(string.Format("Inner service returned {0}", (int)response.StatusCode));
 
                 list = JsonConvert.DeserializeObject<List<ShipmentItem>>(response.Content);
             }

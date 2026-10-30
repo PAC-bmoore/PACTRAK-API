@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PAC.Common.Sage;
+using Input = PAC.Common.Tracking.Input;
 using PAC.DataLayer.API;
 using PAC.DataLayer.Sage;
 
@@ -24,6 +25,7 @@ namespace PAC.Web.API.Controllers
         [HttpGet("{custNum}")]
         public ActionResult<Customer> Get(string custNum)
         {
+            if (!Input.IsKey(custNum)) return BadRequest("customer number");
             try
             {
                 Customer item = CustomerAPI.GetCustomer(custNum);
@@ -32,7 +34,7 @@ namespace PAC.Web.API.Controllers
 
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, ex);
+                return StatusCode(StatusCodes.Status500InternalServerError, "The process encountered an error");
             }
         }
 
@@ -53,7 +55,7 @@ namespace PAC.Web.API.Controllers
 
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, ex);
+                return StatusCode(StatusCodes.Status500InternalServerError, "The process encountered an error");
             }
         }
 

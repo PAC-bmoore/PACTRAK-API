@@ -23,6 +23,9 @@ namespace PAC.DataLayer.API
                 request.Method = Method.Get;
                 RestResponse response = client.Execute(request);
 
+                if (!response.IsSuccessful)
+                    throw new Exception(string.Format("Inner service returned {0}", (int)response.StatusCode));
+
                 item = JsonConvert.DeserializeObject<Customer>(response.Content);
             }
 
@@ -46,6 +49,9 @@ namespace PAC.DataLayer.API
                 request.Method = Method.Put;
                 request.AddObject<Customer>(cust);
                 RestResponse response = client.Execute(request);
+
+                if (!response.IsSuccessful)
+                    throw new Exception(string.Format("Inner service returned {0}", (int)response.StatusCode));
 
                 item = response.Content;
             }
