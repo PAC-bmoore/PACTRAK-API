@@ -1,3 +1,5 @@
+using System.Globalization;
+
 namespace PAC.Common.Tracking
 {
     /// <summary>
@@ -14,17 +16,10 @@ namespace PAC.Common.Tracking
         public static bool IsSono(string? value)
         {
             bool result = false;
+            long tmpSono = 0;
 
-            if (value != null && value.Length >= 1 && value.Length <= 10)
-            {
+            if (value != null && value.Length <= 10 && value.IndexOf('\0') < 0 && long.TryParse(value, NumberStyles.None, CultureInfo.InvariantCulture, out tmpSono) && tmpSono > 0)
                 result = true;
-
-                foreach (char c in value)
-                {
-                    if (!char.IsAsciiDigit(c))
-                        result = false;
-                }
-            }
 
             return result;
         }
