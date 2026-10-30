@@ -105,8 +105,16 @@ namespace PAC.DataLayer.Sage
                             {
                                 string tmpTime = reader["picktime"].ToString().Trim();
                                 string[] arTime = tmpTime.Split(":");
-                                item.SignedDate = item.SignedDate.AddHours(Convert.ToInt32(arTime[0]));
-                                item.SignedDate = item.SignedDate.AddMinutes(Convert.ToInt32(arTime[1]));
+                                if (arTime.Length > 1)
+                                {
+                                    int tmpHour = 0;
+                                    int tmpMin = 0;
+                                    if (int.TryParse(arTime[0], out tmpHour) && int.TryParse(arTime[1], out tmpMin))
+                                    {
+                                        item.SignedDate = item.SignedDate.AddHours(tmpHour);
+                                        item.SignedDate = item.SignedDate.AddMinutes(tmpMin);
+                                    }
+                                }
                             }
                         }
 
