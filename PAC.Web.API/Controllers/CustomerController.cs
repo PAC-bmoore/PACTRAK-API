@@ -11,7 +11,7 @@ namespace PAC.Web.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    [Authorize(Policy = "Cargo.Read")]
     public class CustomerController(ILogger<CustomerController> logger) : ControllerBase
     {
         // GET: api/<CustomerController>

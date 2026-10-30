@@ -3,11 +3,22 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Identity.Web;
 using PAC.Web.API.Services;
 
+const string PacTenantId = "d341c7d5-fe3e-4c64-9fc2-fdb9cb6a231d";
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAd"));
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("Cargo.Read", policy =>
+    {
+        policy.RequireRole("Cargo.Read");
+        policy.RequireAssertion(context => context.User.HasClaim("tid", PacTenantId) || context.User.HasClaim("http://schemas.microsoft.com/identity/claims/tenantid", PacTenantId));
+    });
+});
 
 var sqlConnStr = builder.Configuration.GetConnectionString("PACTRAK-SQL");
 var sageConnStr = builder.Configuration.GetConnectionString("PACTRAK-Sage");
