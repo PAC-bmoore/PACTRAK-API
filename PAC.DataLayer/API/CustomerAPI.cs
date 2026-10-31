@@ -4,6 +4,7 @@ using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Data.OleDb;
+using System.Net;
 using System.Reflection;
 using System.Text;
 
@@ -62,6 +63,60 @@ namespace PAC.DataLayer.API
             }
 
             return item;
+        }
+        #endregion
+
+        #region GetCustomerSummary
+        public static CustomerSummary GetCustomerSummary(string custNum)
+        {
+            CustomerSummary? item = null;
+
+            try
+            {
+                var client = new RestClient(string.Format("{0}/api/Customer/summary/{1}", BaseAPIUrl, custNum));
+                var request = new RestRequest();
+                request.Method = Method.Get;
+                RestResponse response = client.Execute(request);
+
+                if (response.IsSuccessful)
+                    item = JsonConvert.DeserializeObject<CustomerSummary>(response.Content);
+                else if (response.StatusCode != HttpStatusCode.NotFound)
+                    throw new Exception(string.Format("Inner service returned {0}", (int)response.StatusCode));
+            }
+
+            catch (Exception ex)
+            {
+                throw (ex);
+            }
+
+            return item;
+        }
+        #endregion
+
+        #region SearchCustomers
+        public static List<CustomerSummary> SearchCustomers(string text)
+        {
+            List<CustomerSummary>? list = null;
+
+            try
+            {
+                var client = new RestClient(string.Format("{0}/api/Customer/search/{1}", BaseAPIUrl, Uri.EscapeDataString(text)));
+                var request = new RestRequest();
+                request.Method = Method.Get;
+                RestResponse response = client.Execute(request);
+
+                if (!response.IsSuccessful)
+                    throw new Exception(string.Format("Inner service returned {0}", (int)response.StatusCode));
+
+                list = JsonConvert.DeserializeObject<List<CustomerSummary>>(response.Content);
+            }
+
+            catch (Exception ex)
+            {
+                throw (ex);
+            }
+
+            return list;
         }
         #endregion
     }

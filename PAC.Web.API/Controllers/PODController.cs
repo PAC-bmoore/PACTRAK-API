@@ -11,7 +11,7 @@ namespace PAC.Web.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    [Authorize(Policy = "Cargo.Read")]
     public class PODController(ILogger<PODController> logger) : ControllerBase
     {
         // GET api/<PODController>/5
