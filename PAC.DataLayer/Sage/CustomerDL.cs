@@ -119,5 +119,136 @@ namespace PAC.DataLayer.Sage
             return retVal;
         }
         #endregion
+
+        #region GetCustomerSummary
+        public static CustomerSummary GetCustomerSummary(string custNum)
+        {
+            CustomerSummary item = null;
+            OleDbConnection conn = null;
+
+            try
+            {
+                conn = new OleDbConnection(SageConn);
+                conn.Open();
+
+                string query = "SELECT custno,company,city,addrstate,country,custstat " +
+                    "FROM arcust01 WHERE ALLTRIM(custno) == ?";
+
+                OleDbCommand cmd = new OleDbCommand(query, conn);
+                cmd.Parameters.AddWithValue("custno", custNum.Trim());
+                OleDbDataReader reader = cmd.ExecuteReader();
+
+                if (reader != null)
+                {
+                    if (reader.Read())
+                    {
+                        item = new CustomerSummary();
+
+                        if (reader["custno"] != (object)DBNull.Value)
+                            item.custno = reader["custno"].ToString().Trim();
+
+                        if (reader["company"] != (object)DBNull.Value)
+                            item.company = reader["company"].ToString().Trim();
+
+                        if (reader["city"] != (object)DBNull.Value)
+                            item.city = reader["city"].ToString().Trim();
+
+                        if (reader["addrstate"] != (object)DBNull.Value)
+                            item.addrstate = reader["addrstate"].ToString().Trim();
+
+                        if (reader["country"] != (object)DBNull.Value)
+                            item.country = reader["country"].ToString().Trim();
+
+                        if (reader["custstat"] != (object)DBNull.Value)
+                            item.custstat = reader["custstat"].ToString().Trim();
+                    }
+                }
+            }
+
+            catch (Exception ex)
+            {
+                throw (ex);
+            }
+
+            finally
+            {
+                conn.Close();
+            }
+
+            return item;
+        }
+        #endregion
+
+        #region SearchCustomers
+        public static List<CustomerSummary> SearchCustomers(string text)
+        {
+            List<CustomerSummary> list = new List<CustomerSummary>();
+            CustomerSummary item = new CustomerSummary();
+            OleDbConnection conn = null;
+
+            try
+            {
+                int ctr = 0;
+
+                conn = new OleDbConnection(SageConn);
+                conn.Open();
+
+                string query = "SELECT TOP 50 custno,company,city,addrstate,country,custstat " +
+                    "FROM arcust01 " +
+                    "WHERE UPPER(custno) LIKE ? OR UPPER(company) LIKE ? " +
+                    "ORDER BY company, custno";
+
+                OleDbCommand cmd = new OleDbCommand(query, conn);
+                cmd.Parameters.AddWithValue("custno", text.Trim().ToUpper() + "%");
+                cmd.Parameters.AddWithValue("company", "%" + text.Trim().ToUpper() + "%");
+                OleDbDataReader reader = cmd.ExecuteReader();
+
+                if (reader != null)
+                {
+                    while (reader.Read())
+                    {
+                        if (ctr < 50)
+                        {
+                            item = new CustomerSummary();
+
+                            if (reader["custno"] != (object)DBNull.Value)
+                                item.custno = reader["custno"].ToString().Trim();
+
+                            if (reader["company"] != (object)DBNull.Value)
+                                item.company = reader["company"].ToString().Trim();
+
+                            if (reader["city"] != (object)DBNull.Value)
+                                item.city = reader["city"].ToString().Trim();
+
+                            if (reader["addrstate"] != (object)DBNull.Value)
+                                item.addrstate = reader["addrstate"].ToString().Trim();
+
+                            if (reader["country"] != (object)DBNull.Value)
+                                item.country = reader["country"].ToString().Trim();
+
+                            if (reader["custstat"] != (object)DBNull.Value)
+                                item.custstat = reader["custstat"].ToString().Trim();
+
+                            list.Add(item);
+                        }
+
+                        ctr++;
+                    }
+                }
+            }
+
+            catch (Exception ex)
+            {
+                throw (ex);
+            }
+
+            finally
+            {
+                conn.Close();
+            }
+
+            return list;
+        }
+        #endregion
     }
 }

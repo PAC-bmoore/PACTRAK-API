@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PAC.Common.Sage;
+using Input = PAC.Common.Tracking.Input;
 using PAC.DataLayer.Sage;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -27,6 +28,7 @@ namespace PAC.SageWeb.Controllers
         [HttpGet("min/{custNo}")]
         public ActionResult<List<Tariff>> GetMinTariffs(string custNo)
         {
+            if (!Input.IsKey(custNo)) return BadRequest("customer number");
             try
             {
                 List<Tariff> list = TariffDL.GetMinTariffs(custNo);
@@ -43,6 +45,9 @@ namespace PAC.SageWeb.Controllers
         [HttpGet("{custNo}/{origin}/{dest}")]
         public ActionResult<List<Tariff>> GetTariffsByOriginDest(string custNo, string origin, string dest)
         {
+            if (!Input.IsKey(custNo)) return BadRequest("customer number");
+            if (!Input.IsKey(origin)) return BadRequest("origin");
+            if (!Input.IsKey(dest)) return BadRequest("destination");
             try
             {
                 List<Tariff> list = TariffDL.GetTariffsByOriginDest(custNo, origin, dest);
