@@ -1,3 +1,7 @@
+using Azure.Identity;
+using DotNetEnv;
+using DotNetEnv.Configuration;
+using PAC.DataLayer;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Identity.Web;
@@ -6,6 +10,16 @@ using PAC.Web.API.Services;
 const string PacTenantId = "d341c7d5-fe3e-4c64-9fc2-fdb9cb6a231d";
 
 var builder = WebApplication.CreateBuilder(args);
+
+string envFile = Path.Combine(builder.Environment.ContentRootPath, ".env");
+if (File.Exists(envFile))
+    builder.Configuration.AddDotNetEnv(envFile, LoadOptions.NoEnvVars());
+
+string? keyVaultUrl = builder.Configuration["KeyVault:Url"];
+if (!string.IsNullOrEmpty(keyVaultUrl))
+    builder.Configuration.AddAzureKeyVault(new Uri(keyVaultUrl), new ManagedIdentityCredential());
+
+BaseDL.Init(builder.Configuration);
 
 // Add services to the container.
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

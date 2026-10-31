@@ -23,5 +23,23 @@ namespace PAC.Common.Tracking
 
             return result;
         }
+
+        public static bool IsSearch(string? value)
+        {
+            bool result = false;
+
+            if (value != null && value.Trim().Length >= 2 && value.Length <= 30)
+            {
+                result = true;
+
+                foreach (char c in value)
+                {
+                    if (!char.IsLetterOrDigit(c) && c != ' ' && c != '-')
+                        result = false;
+                }
+            }
+
+            return result;
+        }
     }
 }

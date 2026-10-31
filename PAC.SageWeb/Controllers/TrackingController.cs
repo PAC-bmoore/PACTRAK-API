@@ -17,6 +17,7 @@ namespace PAC.SageWeb.Controllers
         [HttpGet("awb/{custno}/open")]
         public ActionResult<List<AirWaybillItem>> GetOpenAWBs(string custno)
         {
+            if (!Input.IsKey(custno)) return BadRequest("customer number");
             try
             {
 
@@ -35,6 +36,7 @@ namespace PAC.SageWeb.Controllers
         [HttpGet("awb/{sono}/manifest")]
         public ActionResult<List<ManifestItem>> GetManifestItems(string sono)
         {
+            if (!Input.IsSono(sono)) return BadRequest("waybill number");
             try
             {
                 
@@ -53,6 +55,11 @@ namespace PAC.SageWeb.Controllers
         [HttpGet("awb/recent/{custNo}/{count}")]
         public ActionResult<List<AirWaybillItem>> GetRecentAWBs(string custNo, int count)
         {
+            if (!Input.IsKey(custNo)) return BadRequest("customer number");
+            if (count < 1)
+                count = 1;
+            if (count > 200)
+                count = 200;
             try
             {
                 List<AirWaybillItem> list = AirWaybillDL.GetRecentAirbills(custNo, count);
@@ -70,6 +77,7 @@ namespace PAC.SageWeb.Controllers
         [HttpGet("awb/shipment/{sono}/details")]
         public ActionResult<List<ShipmentItem>> GetShipmentDetails(string sono)
         {
+            if (!Input.IsSono(sono)) return BadRequest("waybill number");
             try
             {
                 List<ShipmentItem> list = AirWaybillDL.GetShipmentDetails(sono);

@@ -1,7 +1,21 @@
+using Azure.Identity;
+using DotNetEnv;
+using DotNetEnv.Configuration;
+using PAC.DataLayer;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Identity.Web;
 
 var builder = WebApplication.CreateBuilder(args);
+
+string envFile = Path.Combine(builder.Environment.ContentRootPath, ".env");
+if (File.Exists(envFile))
+    builder.Configuration.AddDotNetEnv(envFile, LoadOptions.NoEnvVars());
+
+string? keyVaultUrl = builder.Configuration["KeyVault:Url"];
+if (!string.IsNullOrEmpty(keyVaultUrl))
+    builder.Configuration.AddAzureKeyVault(new Uri(keyVaultUrl), new ManagedIdentityCredential());
+
+BaseDL.Init(builder.Configuration);
 
 var sqlConnStr = builder.Configuration.GetConnectionString("PACTRAK-SQL");
 var sageConnStr = builder.Configuration.GetConnectionString("PACTRAK-Sage");
