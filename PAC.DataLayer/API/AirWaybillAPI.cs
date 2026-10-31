@@ -18,7 +18,7 @@ namespace PAC.DataLayer.API
 
             try
             {
-                var client = new RestClient(string.Format("{0}/api/AirWaybill/recent/{1}/{2}", BaseAPIUrl, custNo, count));
+                var client = new RestClient(string.Format("{0}/api/Tracking/awb/recent/{1}/{2}", BaseAPIUrl, custNo, count));
                 var request = new RestRequest();
                 request.Method = Method.Get;
                 RestResponse response = client.Execute(request);
@@ -43,7 +43,7 @@ namespace PAC.DataLayer.API
 
             try
             {
-                var client = new RestClient(string.Format("{0}/api/awb/{1}/open", BaseAPIUrl, custNo));
+                var client = new RestClient(string.Format("{0}/api/Tracking/awb/{1}/open", BaseAPIUrl, custNo));
                 var request = new RestRequest();
                 request.Method = Method.Get;
                 RestResponse response = client.Execute(request);
@@ -68,7 +68,7 @@ namespace PAC.DataLayer.API
 
             try
             {
-                var client = new RestClient(string.Format("{0}/api/awb/{1}/manifest", BaseAPIUrl, sono));
+                var client = new RestClient(string.Format("{0}/api/Tracking/awb/{1}/manifest", BaseAPIUrl, sono));
                 var request = new RestRequest();
                 request.Method = Method.Get;
                 RestResponse response = client.Execute(request);
@@ -93,7 +93,7 @@ namespace PAC.DataLayer.API
 
             try
             {
-                var client = new RestClient(string.Format("{0}/api/awb/shipment/{1}/details", BaseAPIUrl, sono));
+                var client = new RestClient(string.Format("{0}/api/Tracking/awb/shipment/{1}/details", BaseAPIUrl, sono));
                 var request = new RestRequest();
                 request.Method = Method.Get;
                 RestResponse response = client.Execute(request);
