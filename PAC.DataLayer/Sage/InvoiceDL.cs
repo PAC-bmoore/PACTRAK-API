@@ -29,7 +29,7 @@ namespace PAC.DataLayer.Sage
 
                 string query = "SELECT custno, Invno, Invdte, ponum, refno, taxrate, tax, invamt, paidamt, balance, pterms, Dtepaid, ordate, ornum, exchrat " +
                     "FROM armast01 " +
-                    "WHERE custno = '" + customerNum + "' " +
+                    "WHERE ALLTRIM(custno) == '" + customerNum + "' " +
                     "AND invdte >= " + minDateString + " " +
                     "AND invdte <= " + maxDateString + " " +
                     "ORDER BY invdte desc";
@@ -42,6 +42,9 @@ namespace PAC.DataLayer.Sage
                     while (reader.Read())
                     {
                         item = new Invoice();
+
+                        if (reader["custno"] != (object)DBNull.Value)
+                            item.CustNo = reader["custno"].ToString().Trim();
 
                         if (reader["ornum"] != (object)DBNull.Value)
                             item.Sono = reader["ornum"].ToString().Trim();
@@ -107,8 +110,8 @@ namespace PAC.DataLayer.Sage
 
                 string query = "SELECT invno,item,custno,descrip,umeasur,price,qtyord,qtyshp,invdte,ponum,extprice,transeq,tranlineno,sono " +
                     "FROM artran01 " +
-                    "WHERE ALLTRIM(invno) = '" + invNo + "' " +
-                    "AND ALLTRIM(custno) = '" + custNo + "' ";
+                    "WHERE ALLTRIM(invno) == '" + invNo + "' " +
+                    "AND ALLTRIM(custno) == '" + custNo + "' ";
 
                 OleDbCommand cmd = new OleDbCommand(query, conn);
                 OleDbDataReader reader = cmd.ExecuteReader();
@@ -283,8 +286,8 @@ namespace PAC.DataLayer.Sage
                     "A.INVAMT as Invoice_Amount, S.SONO, A.ORDATE, S.trndte, S.trnto, S.trneta " +
                     "FROM ARMAST01 A " +
                     "LEFT JOIN SOMAST01 S ON S.SONO = A.ORNUM " +
-                    "Where ALLTRIM(S.SONO) = '" + sono + "' " +
-                    "AND ALLTRIM(A.INVNO) = '" + invoiceNum + "' " +
+                    "Where ALLTRIM(S.SONO) == '" + sono + "' " +
+                    "AND ALLTRIM(A.INVNO) == '" + invoiceNum + "' " +
                     "ORDER BY S.SONO DESC";
 
                 OleDbCommand cmd = new OleDbCommand(query, conn);

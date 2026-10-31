@@ -39,6 +39,43 @@ namespace PAC.SageWeb.Controllers
             }
         }
 
+        // GET api/<CustomerController>/summary/5
+        [HttpGet("summary/{custNum}")]
+        [AllowAnonymous]
+        public ActionResult<CustomerSummary> GetSummary(string custNum)
+        {
+            if (!Input.IsKey(custNum)) return BadRequest("customer number");
+            try
+            {
+                CustomerSummary item = CustomerDL.GetCustomerSummary(custNum);
+                if (item == null) return NotFound();
+                return Ok(item);
+            }
+
+            catch (Exception ex)
+            {
+                return Problem(statusCode: StatusCodes.Status500InternalServerError, title: "The operations database did not answer.");
+            }
+        }
+
+        // GET api/<CustomerController>/search/abc
+        [HttpGet("search/{text}")]
+        [AllowAnonymous]
+        public ActionResult<List<CustomerSummary>> Search(string text)
+        {
+            if (!Input.IsSearch(text)) return BadRequest("search text");
+            try
+            {
+                List<CustomerSummary> list = CustomerDL.SearchCustomers(text);
+                return Ok(list);
+            }
+
+            catch (Exception ex)
+            {
+                return Problem(statusCode: StatusCodes.Status500InternalServerError, title: "The operations database did not answer.");
+            }
+        }
+
         // POST api/<CustomerController>
         [HttpPost]
         public void Post([FromBody] string value)

@@ -21,7 +21,7 @@ namespace PAC.DataLayer.Sage
                 conn.Open();
 
                 string query = "SELECT MIN(unitpr1) as minprice, origin, dest, currid FROM ICPRIC01 " +
-                    "WHERE custno = '" + custno + "' " +
+                    "WHERE ALLTRIM(custno) == '" + custno + "' " +
                     "AND unitpr1 > 0 " +
                     "GROUP BY origin, dest, currid";
 
@@ -83,9 +83,9 @@ namespace PAC.DataLayer.Sage
                     "p.origin, p.dest " +
                     "FROM ICPRIC01 p " +
                     "LEFT JOIN icitem01 i on i.Item = p.item " +
-                    "WHERE custno = '" + custno + "' " +
-                    "and origin = '" + origin + "' " +
-                    "and dest = '" + dest + "' " +
+                    "WHERE ALLTRIM(custno) == '" + custno + "' " +
+                    "and ALLTRIM(origin) == '" + origin + "' " +
+                    "and ALLTRIM(dest) == '" + dest + "' " +
                     "AND unitpr1 > 0 " +
                     "AND i.itemstat = 'A' " +
                     "ORDER BY p.item, p.serv_level ";

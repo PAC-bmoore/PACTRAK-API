@@ -31,7 +31,7 @@ namespace PAC.DataLayer.Sage
                     "LEFT JOIN SOPODD01 PO ON PO.AWBNO = So.SONO " +
                     "LEFT JOIN somanf01 m ON m.sono = So.sono " +
                     "WHERE ((So.SOSTAT = 'C') OR (So.WtShipped > 0  OR  So.PCShipped > 0)) " +
-                    "AND ALLTRIM(So.CUSTNO) = '" + custoNo + "' " +
+                    "AND ALLTRIM(So.CUSTNO) == '" + custoNo + "' " +
                     "AND so.ORDATE >= " + minDateString + " " +
                     "AND so.ORDATE <= " + maxDateString + " " +
                     "AND (m.lnstat is null OR m.lnstat != 'X') " +
@@ -162,7 +162,7 @@ namespace PAC.DataLayer.Sage
                 string query = "SELECT signby,pickdate,picktime,recpcs,trnwt,umeasur,custno,awbno,adduser,adddate,addtime,lckuser," +
                     "lckstat,lckdate,lcktime,tranlineno,emailpu " +
                     "FROM SOPODD01 " +
-                    "WHERE ALLTRIM(awbno) = '" + awb + "' ";
+                    "WHERE ALLTRIM(awbno) == '" + awb + "' ";
 
                 OleDbCommand cmd = new OleDbCommand(query, conn);
                 OleDbDataReader reader = cmd.ExecuteReader();
@@ -218,7 +218,7 @@ namespace PAC.DataLayer.Sage
                     "FROM SOPODD01 " +
                     "WHERE pickdate >= " + minDateString + " " +
                     "AND pickdate <= " + maxDateString + " " +
-                    "AND ALLTRIM(custno) = '" + custNum + "'";
+                    "AND ALLTRIM(custno) == '" + custNum + "'";
 
                 OleDbCommand cmd = new OleDbCommand(query, conn);
                 OleDbDataReader reader = cmd.ExecuteReader();
