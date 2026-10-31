@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PAC.Common.Sage;
+using Input = PAC.Common.Tracking.Input;
 using PAC.DataLayer.API;
 using PAC.DataLayer.Sage;
 
@@ -10,13 +11,14 @@ namespace PAC.Web.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
-    public class PODController : ControllerBase
+    [Authorize(Policy = "Cargo.Read")]
+    public class PODController(ILogger<PODController> logger) : ControllerBase
     {
         // GET api/<PODController>/5
         [HttpGet("{awb}")]
         public ActionResult<PODItem> Get(string awb)
         {
+            if (!Input.IsSono(awb)) return BadRequest("waybill number");
             try
             {
                 List<PODItem> list = PODAPI.GetPODInformation(awb);
@@ -25,13 +27,15 @@ namespace PAC.Web.API.Controllers
 
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, ex);
+                logger.LogError(ex, "POD Get failed for {Path}", Request.Path);
+                return StatusCode(StatusCodes.Status500InternalServerError, "The process encountered an error");
             }
         }
 
         [HttpGet("{custNo}/{minDate}/{maxDate}")]
         public ActionResult<PODHistoryItem> GetPODsByCustInvNo(string custNo, DateTime minDate, DateTime maxDate)
         {
+            if (!Input.IsKey(custNo)) return BadRequest("customer number");
             try
             {
                 List<PODHistoryItem> list = PODAPI.GetPODHistory(custNo, minDate, maxDate);
@@ -40,7 +44,8 @@ namespace PAC.Web.API.Controllers
 
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, ex);
+                logger.LogError(ex, "GetPODsByCustInvNo failed for {Path}", Request.Path);
+                return StatusCode(StatusCodes.Status500InternalServerError, "The process encountered an error");
             }
         }
 

@@ -68,7 +68,11 @@ namespace PAC.DataLayer.Sage
                             item.FlightDate = reader.GetDateTime(reader.GetOrdinal("fltdate"));
 
                         if (reader["fltid"] != (object)DBNull.Value)
-                            item.FlightID = Convert.ToInt32(reader["fltno"].ToString().Trim()); 
+                        {
+                            int tmpId = 0;
+                            if (int.TryParse(reader["fltid"].ToString().Trim(), out tmpId))
+                                item.FlightID = tmpId;
+                        }
 
                         list.Add(item);
                     }

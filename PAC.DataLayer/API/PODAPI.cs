@@ -13,7 +13,7 @@ namespace PAC.DataLayer.API
         public static List<PODHistoryItem> GetPODHistory(string custNo, DateTime minDate, DateTime maxDate)
         {
 
-            List<PODHistoryItem> item = null;
+            List<PODHistoryItem>? item = null;
 
             try
             {
@@ -21,6 +21,9 @@ namespace PAC.DataLayer.API
                 var request = new RestRequest();
                 request.Method = Method.Get;
                 RestResponse response = client.Execute(request);
+
+                if (!response.IsSuccessful)
+                    throw new Exception(string.Format("Inner service returned {0}", (int)response.StatusCode));
 
                 item = JsonConvert.DeserializeObject<List<PODHistoryItem>>(response.Content);
             }
@@ -38,7 +41,7 @@ namespace PAC.DataLayer.API
         public static List<PODItem> GetPODInformation(string awb)
         {
 
-            List<PODItem> item = null;
+            List<PODItem>? item = null;
 
             try
             {
@@ -46,6 +49,9 @@ namespace PAC.DataLayer.API
                 var request = new RestRequest();
                 request.Method = Method.Get;
                 RestResponse response = client.Execute(request);
+
+                if (!response.IsSuccessful)
+                    throw new Exception(string.Format("Inner service returned {0}", (int)response.StatusCode));
 
                 item = JsonConvert.DeserializeObject<List<PODItem>>(response.Content);
             }

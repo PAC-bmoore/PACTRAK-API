@@ -14,7 +14,7 @@ namespace PAC.DataLayer.API
         public static List<Tariff> GetMinTariffs(string custNo)
         {
             
-            List<Tariff> item = null;
+            List<Tariff>? item = null;
 
             try
             {
@@ -22,6 +22,9 @@ namespace PAC.DataLayer.API
                 var request = new RestRequest();
                 request.Method = Method.Get;
                 RestResponse response = client.Execute(request);
+
+                if (!response.IsSuccessful)
+                    throw new Exception(string.Format("Inner service returned {0}", (int)response.StatusCode));
 
                 item = JsonConvert.DeserializeObject<List<Tariff>>(response.Content);
             }
@@ -39,7 +42,7 @@ namespace PAC.DataLayer.API
         public static List<Tariff> GetTariffsByOriginDest(string custNo, string origin, string dest)
         {
 
-            List<Tariff> item = null;
+            List<Tariff>? item = null;
 
             try
             {
@@ -47,6 +50,9 @@ namespace PAC.DataLayer.API
                 var request = new RestRequest();
                 request.Method = Method.Get;
                 RestResponse response = client.Execute(request);
+
+                if (!response.IsSuccessful)
+                    throw new Exception(string.Format("Inner service returned {0}", (int)response.StatusCode));
 
                 item = JsonConvert.DeserializeObject<List<Tariff>>(response.Content);
             }

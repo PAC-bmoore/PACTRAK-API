@@ -14,7 +14,7 @@ namespace PAC.DataLayer.API
         public static List<AirWaybillItem> GetOpenAWBs(string custNo)
         {
 
-            List<AirWaybillItem> item = null;
+            List<AirWaybillItem>? item = null;
 
             try
             {
@@ -22,6 +22,9 @@ namespace PAC.DataLayer.API
                 var request = new RestRequest();
                 request.Method = Method.Get;
                 RestResponse response = client.Execute(request);
+
+                if (!response.IsSuccessful)
+                    throw new Exception(string.Format("Inner service returned {0}", (int)response.StatusCode));
 
                 item = JsonConvert.DeserializeObject<List<AirWaybillItem>>(response.Content);
             }
@@ -39,7 +42,7 @@ namespace PAC.DataLayer.API
         public static List<ManifestItem> GetManifestItems(string sono)
         {
 
-            List<ManifestItem> item = null;
+            List<ManifestItem>? item = null;
 
             try
             {
@@ -47,6 +50,9 @@ namespace PAC.DataLayer.API
                 var request = new RestRequest();
                 request.Method = Method.Get;
                 RestResponse response = client.Execute(request);
+
+                if (!response.IsSuccessful)
+                    throw new Exception(string.Format("Inner service returned {0}", (int)response.StatusCode));
 
                 item = JsonConvert.DeserializeObject<List<ManifestItem>>(response.Content);
             }
@@ -64,7 +70,7 @@ namespace PAC.DataLayer.API
         public static List<AirWaybillItem> GetRecentAWBs(string custNo, int count)
         {
 
-            List<AirWaybillItem> item = null;
+            List<AirWaybillItem>? item = null;
 
             try
             {
@@ -72,6 +78,9 @@ namespace PAC.DataLayer.API
                 var request = new RestRequest();
                 request.Method = Method.Get;
                 RestResponse response = client.Execute(request);
+
+                if (!response.IsSuccessful)
+                    throw new Exception(string.Format("Inner service returned {0}", (int)response.StatusCode));
 
                 item = JsonConvert.DeserializeObject<List<AirWaybillItem>>(response.Content);
             }

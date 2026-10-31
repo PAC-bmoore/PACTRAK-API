@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PAC.Common.Sage;
+using Input = PAC.Common.Tracking.Input;
 using PAC.DataLayer.Sage;
 using PAC.DataLayer.API;
 using Microsoft.AspNetCore.Authorization;
@@ -10,8 +11,8 @@ namespace PAC.Web.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
-    public class TariffController : ControllerBase
+    [Authorize(Policy = "Cargo.Read")]
+    public class TariffController(ILogger<TariffController> logger) : ControllerBase
     {
         // GET: api/<TariffController>
         [HttpGet]
@@ -30,6 +31,7 @@ namespace PAC.Web.API.Controllers
         [HttpGet("min/{custNo}")]
         public ActionResult<List<Tariff>> GetMinTariffs(string custNo)
         {
+            if (!Input.IsKey(custNo)) return BadRequest("customer number");
             try
             {
                 List<Tariff> list = TariffAPI.GetMinTariffs(custNo);
@@ -39,13 +41,17 @@ namespace PAC.Web.API.Controllers
 
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, ex);
+                logger.LogError(ex, "GetMinTariffs failed for {Path}", Request.Path);
+                return StatusCode(StatusCodes.Status500InternalServerError, "The process encountered an error");
             }
         }
 
         [HttpGet("{custNo}/{origin}/{dest}")]
         public ActionResult<List<Tariff>> GetTariffsByOriginDest(string custNo, string origin, string dest)
         {
+            if (!Input.IsKey(custNo)) return BadRequest("customer number");
+            if (!Input.IsKey(origin)) return BadRequest("origin");
+            if (!Input.IsKey(dest)) return BadRequest("destination");
             try
             {
                 List<Tariff> list = TariffAPI.GetTariffsByOriginDest(custNo, origin, dest);
@@ -55,7 +61,8 @@ namespace PAC.Web.API.Controllers
 
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, ex);
+                logger.LogError(ex, "GetTariffsByOriginDest failed for {Path}", Request.Path);
+                return StatusCode(StatusCodes.Status500InternalServerError, "The process encountered an error");
             }
         }
 

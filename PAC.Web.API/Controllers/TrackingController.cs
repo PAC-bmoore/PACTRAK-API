@@ -9,21 +9,15 @@ using System.Text;
 
 namespace PAC.Web.API.Controllers
 {
-    /// <summary>
-    /// Tracking reads for the PAC Track portal. Each route here mirrors the
-    /// same route on PAC.SageWeb and forwards to it unchanged: the route
-    /// values are checked, the query string goes through as given (the
-    /// inner service validates the dates), and the answer comes back byte
-    /// for byte. Dates are ISO (yyyy-MM-dd).
-    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    [Authorize(Policy = "Cargo.Read")]
     public class TrackingController(ILogger<TrackingController> logger) : ControllerBase
     {
         [HttpGet("awb/{custno}/open")]
         public ActionResult<List<AirWaybillItem>> GetOpenAWBs(string custno)
         {
+            if (!Input.IsKey(custno)) return BadRequest("customer number");
             try
             {
                 List<AirWaybillItem> list = TrackingAPI.GetOpenAWBs(custno);
@@ -41,6 +35,7 @@ namespace PAC.Web.API.Controllers
         [HttpGet("awb/{sono}/manifest")]
         public ActionResult<List<ManifestItem>> GetManifestItems(string sono)
         {
+            if (!Input.IsSono(sono)) return BadRequest("waybill number");
             try
             {
 
@@ -59,6 +54,11 @@ namespace PAC.Web.API.Controllers
         [HttpGet("awb/recent/{custNo}/{count}")]
         public ActionResult<List<AirWaybillItem>> GetRecentAWBs(string custNo, int count)
         {
+            if (!Input.IsKey(custNo)) return BadRequest("customer number");
+            if (count < 1)
+                count = 1;
+            if (count > 200)
+                count = 200;
             try
             {
                 List<AirWaybillItem> list = AirWaybillAPI.GetRecentAirbills(custNo, count);
@@ -76,6 +76,7 @@ namespace PAC.Web.API.Controllers
         [HttpGet("awb/shipment/{sono}/details")]
         public ActionResult<List<ShipmentItem>> GetShipmentDetails(string sono)
         {
+            if (!Input.IsSono(sono)) return BadRequest("waybill number");
             try
             {
                 List<ShipmentItem> list = AirWaybillAPI.GetShipmentDetails(sono);

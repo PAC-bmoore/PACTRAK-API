@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PAC.Common.Sage;
+using Input = PAC.Common.Tracking.Input;
 using PAC.DataLayer.API;
 using PAC.DataLayer.Sage;
 
@@ -10,8 +11,8 @@ namespace PAC.Web.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
-    public class InvoiceController : ControllerBase
+    [Authorize(Policy = "Cargo.Read")]
+    public class InvoiceController(ILogger<InvoiceController> logger) : ControllerBase
     {
         // GET: api/<InvoiceController>
         [HttpGet]
@@ -33,13 +34,15 @@ namespace PAC.Web.API.Controllers
 
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, ex);
+                logger.LogError(ex, "Invoice Get failed for {Path}", Request.Path);
+                return StatusCode(StatusCodes.Status500InternalServerError, "The process encountered an error");
             }
         }
 
         [HttpGet("Detail/{id}/{custNo}")]
         public ActionResult<List<InvoiceItem>> GetInvoiceLineItems(int id, string custNo)
         {
+            if (!Input.IsKey(custNo)) return BadRequest("customer number");
             try
             {
                 List<InvoiceItem> list = InvoiceAPI.GetInvoiceLineItems(id.ToString(), custNo);
@@ -49,7 +52,8 @@ namespace PAC.Web.API.Controllers
 
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, ex);
+                logger.LogError(ex, "GetInvoiceLineItems failed for {Path}", Request.Path);
+                return StatusCode(StatusCodes.Status500InternalServerError, "The process encountered an error");
             }
         }
 
@@ -57,6 +61,7 @@ namespace PAC.Web.API.Controllers
         [HttpGet("{custNo}/{minDate}/{maxDate}")]
         public ActionResult<List<Invoice>> GetInvoiceByCustInvNo(string custNo, DateTime minDate, DateTime maxDate)
         {
+            if (!Input.IsKey(custNo)) return BadRequest("customer number");
             try
             {
                 List<Invoice> list = InvoiceAPI.GetInvoicesByCustDateRange(custNo, minDate, maxDate);
@@ -66,7 +71,8 @@ namespace PAC.Web.API.Controllers
 
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, ex);
+                logger.LogError(ex, "GetInvoiceByCustInvNo failed for {Path}", Request.Path);
+                return StatusCode(StatusCodes.Status500InternalServerError, "The process encountered an error");
             }
         }
 

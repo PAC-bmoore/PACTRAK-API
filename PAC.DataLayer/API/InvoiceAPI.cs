@@ -12,7 +12,7 @@ namespace PAC.DataLayer.API
         #region GetInvoicesByCustDateRange
         public static List<Invoice> GetInvoicesByCustDateRange(string custNo, DateTime minDate, DateTime maxDate)
         {
-            List<Invoice> item = null;
+            List<Invoice>? item = null;
 
             try
             {
@@ -20,6 +20,9 @@ namespace PAC.DataLayer.API
                 var request = new RestRequest();
                 request.Method = Method.Get;
                 RestResponse response = client.Execute(request);
+
+                if (!response.IsSuccessful)
+                    throw new Exception(string.Format("Inner service returned {0}", (int)response.StatusCode));
 
                 item = JsonConvert.DeserializeObject<List<Invoice>>(response.Content);
             }
@@ -37,7 +40,7 @@ namespace PAC.DataLayer.API
         public static List<InvoiceItem> GetInvoiceLineItems(string invNo, string custNo)
         {
 
-            List<InvoiceItem> list = null;
+            List<InvoiceItem>? list = null;
 
             try
             {
@@ -45,6 +48,9 @@ namespace PAC.DataLayer.API
                 var request = new RestRequest();
                 request.Method = Method.Get;
                 RestResponse response = client.Execute(request);
+
+                if (!response.IsSuccessful)
+                    throw new Exception(string.Format("Inner service returned {0}", (int)response.StatusCode));
 
                 list = JsonConvert.DeserializeObject<List<InvoiceItem>>(response.Content);
             }
@@ -62,7 +68,7 @@ namespace PAC.DataLayer.API
         public static Invoice GetTrackingInvoiceBySono(string sono)
         {
 
-            Invoice item = null;
+            Invoice? item = null;
 
             try
             {
@@ -70,6 +76,9 @@ namespace PAC.DataLayer.API
                 var request = new RestRequest();
                 request.Method = Method.Get;
                 RestResponse response = client.Execute(request);
+
+                if (!response.IsSuccessful)
+                    throw new Exception(string.Format("Inner service returned {0}", (int)response.StatusCode));
 
                 item = JsonConvert.DeserializeObject<Invoice>(response.Content);
             }

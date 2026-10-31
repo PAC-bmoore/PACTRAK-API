@@ -15,6 +15,7 @@ namespace PAC.SageWeb.Controllers
         [HttpGet("{awb}")]
         public ActionResult<PODItem> Get(string awb)
         {
+            if (!Input.IsSono(awb)) return BadRequest("waybill number");
             try
             {
                 List<PODItem> list = PODDL.GetPODInformation(awb);
@@ -23,7 +24,7 @@ namespace PAC.SageWeb.Controllers
 
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, ex);
+                return Problem(statusCode: StatusCodes.Status500InternalServerError, title: "The operations database did not answer.");
             }
         }
 
