@@ -245,7 +245,7 @@ namespace PAC.DataLayer.Sage
                 conn.Open();
 
                 string query = "SELECT s.sono, s.awbprefix, s.ordate, s.origin, s.dest, s.serv_level, s.poofkgs, s.pieces, s.weight, s.commodity, " +
-                    "s.dimweight, s.wtshipped, s.pcshipped " +
+                    "s.dimweight, s.wtshipped, s.pcshipped, s.custno " +
                     "FROM somast01 s " +
                     "WHERE VAL(s.sono) = " + sono + " " +
                     "ORDER BY ordate desc";
@@ -291,6 +291,9 @@ namespace PAC.DataLayer.Sage
 
                         if (reader["dimweight"] != (object)DBNull.Value)
                             item.DIMWeight = reader.GetDecimal(reader.GetOrdinal("dimweight"));
+
+                        if (reader["custno"] != (object)DBNull.Value)
+                            item.CustNo = reader["custno"].ToString().Trim();
 
                         list.Add(item);
                     }

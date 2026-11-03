@@ -26,6 +26,7 @@ namespace PAC.Common.Tracking
         public DateTime OrderDate { get; set; }
         public string Commodity { get; set; } = string.Empty;
         public string AWBPrefix { get; set; } = string.Empty;
+        public string CustNo { get; set; } = string.Empty;
 
     }
 }
