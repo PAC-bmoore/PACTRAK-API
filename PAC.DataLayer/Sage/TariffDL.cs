@@ -118,13 +118,13 @@ namespace PAC.DataLayer.Sage
                             item.UnitPrice = Convert.ToDecimal(reader["unitpr1"].ToString());
 
                         if (reader["begqty2"] != (object)DBNull.Value)
-                            item.BeginQty2 = Convert.ToDecimal(reader["begqty1"].ToString());
+                            item.BeginQty2 = Convert.ToDecimal(reader["begqty2"].ToString());
 
                         if (reader["endqty2"] != (object)DBNull.Value)
-                            item.EndQty2 = Convert.ToDecimal(reader["endqty1"].ToString());
+                            item.EndQty2 = Convert.ToDecimal(reader["endqty2"].ToString());
 
                         if (reader["unitpr2"] != (object)DBNull.Value)
-                            item.UnitPrice2 = Convert.ToDecimal(reader["unitpr1"].ToString());
+                            item.UnitPrice2 = Convert.ToDecimal(reader["unitpr2"].ToString());
 
                         if (reader["currid"] != (object)DBNull.Value)
                             item.Curreny = reader["currid"].ToString().Trim();
