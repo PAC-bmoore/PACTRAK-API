@@ -21,5 +21,6 @@ namespace PAC.Common.Sage
         public List<InvoiceItem> Items { get; set; }
         public string InvoiceStatus { get; set; } = string.Empty;
         public string CustNo { get; set; } = string.Empty;
+        public string PaymentTerms { get; set; } = string.Empty;
     }
 }

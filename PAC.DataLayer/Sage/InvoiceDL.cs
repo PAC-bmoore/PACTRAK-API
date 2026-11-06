@@ -55,8 +55,11 @@ namespace PAC.DataLayer.Sage
                         if (reader["Invdte"] != (object)DBNull.Value)
                         {
                             item.InvoiceDate = reader.GetDateTime(reader.GetOrdinal("Invdte"));
-                            item.InvoiceDueDate = item.InvoiceDueDate.AddDays(30);
+                            item.InvoiceDueDate = item.InvoiceDate.AddDays(30);
                         }
+
+                        if (reader["pterms"] != (object)DBNull.Value)
+                            item.PaymentTerms = reader["pterms"].ToString().Trim();
 
                         if (reader["invamt"] != (object)DBNull.Value)
                             item.InvoiceTotal = reader.GetDecimal(reader.GetOrdinal("invamt"));
@@ -72,7 +75,9 @@ namespace PAC.DataLayer.Sage
 
                         if (item.Balance == 0)
                             item.InvoiceStatus = "Paid";
-                        else if (item.Balance > 0 && DateTime.Now > item.InvoiceDueDate)
+                        else if (item.Balance < 0)
+                            item.InvoiceStatus = "Credit";
+                        else if (item.InvoiceDueDate != DateTime.MinValue && DateTime.Today > item.InvoiceDueDate.Date)
                             item.InvoiceStatus = "Overdue";
                         else
                             item.InvoiceStatus = "Due";
